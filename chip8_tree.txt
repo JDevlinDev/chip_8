@@ -1,0 +1,21 @@
+.
+├── build
+│   ├── chip_8
+│   ├── CMakeCache.txt
+│   ├── CMakeFiles
+│   ├── cmake_install.cmake
+│   ├── libSDL3.so -> libSDL3.so.0
+│   ├── libSDL3.so.0 -> libSDL3.so.0.5.0
+│   ├── libSDL3.so.0.5.0
+│   ├── Makefile
+│   └── third_party
+├── chip8_tree.txt
+├── CMakeLists.txt
+├── include
+├── lib
+├── src
+│   └── main.c
+└── third_party
+    └── SDL
+
+9 directories, 10 files
