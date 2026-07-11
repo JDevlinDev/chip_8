@@ -1,21 +1,28 @@
 .
 ├── build
-│   ├── chip_8
+│   ├── build.ninja
 │   ├── CMakeCache.txt
 │   ├── CMakeFiles
 │   ├── cmake_install.cmake
-│   ├── libSDL3.so -> libSDL3.so.0
-│   ├── libSDL3.so.0 -> libSDL3.so.0.5.0
-│   ├── libSDL3.so.0.5.0
-│   ├── Makefile
+│   ├── compile_commands.json
+│   ├── Debug
 │   └── third_party
 ├── chip8_tree.txt
 ├── CMakeLists.txt
 ├── include
-├── lib
+│   ├── chip8_config.h
+│   ├── chip8.h
+│   ├── chip8_keyboard.h
+│   ├── chip8_memory.h
+│   ├── chip8_registers.h
+│   └── chip8_stack.h
+├── README.md
 ├── src
+│   ├── chip8_keyboard.c
+│   ├── chip8_memory.c
+│   ├── chip8_stack.c
 │   └── main.c
 └── third_party
     └── SDL
 
-9 directories, 10 files
+9 directories, 17 files

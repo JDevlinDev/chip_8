@@ -4,11 +4,9 @@
 
 #include "chip8.h"
 
-/* We will use this renderer to draw into this window every frame. */
 static SDL_Window *window = NULL;
 static SDL_Renderer *renderer = NULL;
 
-/* This function runs once at startup. */
 SDL_AppResult SDL_AppInit(void **appstate, int argc, char *argv[])
 {
     SDL_SetAppMetadata("Chip8 Renderer", "1.0", "com.jdevs.chip8");
@@ -20,25 +18,22 @@ SDL_AppResult SDL_AppInit(void **appstate, int argc, char *argv[])
 
     if (!SDL_CreateWindowAndRenderer(
             CHIP8_WINDOW_TITLE,
-            CHIP8_WINDOW_WIDTH,
-            CHIP8_WINDOW_HEIGHT,
+            CHIP8_DISPLAY_WIDTH,
+            CHIP8_DISPLAY_HEIGHT,
             SDL_WINDOW_RESIZABLE,
             &window, &renderer)) {
             SDL_Log("Couldn't create window/renderer: %s", SDL_GetError());
         return SDL_APP_FAILURE;
     }
-    // Move the window 50 pixels from the left, and 50 pixels from the top
-    SDL_SetWindowPosition(window, 50, 50);
     SDL_SetRenderLogicalPresentation(
             renderer,
-            CHIP8_DISPLAY_WIDTH,
-            CHIP8_DISPLAY_HEIGHT,
+            CHIP8_WINDOW_WIDTH,
+            CHIP8_WINDOW_HEIGHT,
             SDL_LOGICAL_PRESENTATION_LETTERBOX);
 
     return SDL_APP_CONTINUE;  /* carry on with the program! */
 }
 
-/* This function runs when a new event (mouse input, keypresses, etc) occurs. */
 SDL_AppResult SDL_AppEvent(void *appstate, SDL_Event *event)
 {
     if (event->type == SDL_EVENT_QUIT) {
@@ -47,18 +42,25 @@ SDL_AppResult SDL_AppEvent(void *appstate, SDL_Event *event)
     return SDL_APP_CONTINUE;  /* carry on with the program! */
 }
 
-/* This function runs once per frame, and is the heart of the program. */
 SDL_AppResult SDL_AppIterate(void *appstate)
 {
-    const double now = ((double)SDL_GetTicks()) / 1000.0;  /* convert from milliseconds to seconds. */
-    /* choose the color for the frame we will draw. The sine wave trick makes it fade between colors smoothly. */
-    const float red = (float) (0.5 + 0.5 * SDL_sin(now));
-    const float green = (float) (0.5 + 0.5 * SDL_sin(now + SDL_PI_D * 2 / 3));
-    const float blue = (float) (0.5 + 0.5 * SDL_sin(now + SDL_PI_D * 4 / 3));
-    SDL_SetRenderDrawColorFloat(renderer, red, green, blue, SDL_ALPHA_OPAQUE_FLOAT);  /* new color, full alpha. */
+    SDL_FRect rect1, rect2;
 
-    /* clear the window to the draw color. */
+    SDL_SetRenderDrawColor(renderer, 66, 66, 66, SDL_ALPHA_OPAQUE);
+    
     SDL_RenderClear(renderer);
+
+    SDL_SetRenderDrawColor(renderer, 255, 255, 255, SDL_ALPHA_OPAQUE);
+    rect1.x = 0;
+    rect1.y = 0;
+    rect1.w = 10;
+    rect1.h = 10;
+    rect2.x = 54;
+    rect2.y = 0;
+    rect2.w = 10;
+    rect2.h = 10;
+    SDL_RenderFillRect(renderer, &rect1);
+    SDL_RenderFillRect(renderer, &rect2);
 
     /* put the newly-cleared rendering on the screen. */
     SDL_RenderPresent(renderer);
@@ -66,7 +68,6 @@ SDL_AppResult SDL_AppIterate(void *appstate)
     return SDL_APP_CONTINUE;  /* carry on with the program! */
 }
 
-/* This function runs once at shutdown. */
 void SDL_AppQuit(void *appstate, SDL_AppResult result)
 {
     /* SDL will clean up the window/renderer for us. */
