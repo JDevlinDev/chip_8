@@ -12,10 +12,12 @@ static void chip8_memory_in_bounds(uint16_t index)
 
 int chip8_memory_set(chip8_memory_t *memory, uint16_t index, uint8_t value)
 {
-
+    chip8_memory_in_bounds(index);
+    memory->memory[index] = value;
 }
 
 uint8_t chip8_memory_get(chip8_memory_t *memory, uint16_t index)
 {
-
+    chip8_memory_in_bounds(index);
+    return memory->memory[index];
 }
