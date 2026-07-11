@@ -1,13 +1,15 @@
 #include <stdint.h>
+#include <stdlib.h>
+#include <stdio.h>
+
 #include "chip8.h"
 #include "chip8_stack.h"
 
-void chip8_stack_in_bounds(chip8_t *chip8) {
-    if (chip8->registers.SP > CHIP8_STACK_DEPTH)
-        chip8->state = CHIP8_STATE_PANIC;
-}
-
 void chip8_stack_push(chip8_t *chip8, uint16_t val) {
+    if (chip8->registers.PC > CHIP8_STACK_DEPTH) {
+        fprintf(stderr, "CHIP8 FATAL ERROR: Stack overflow!\n");
+        exit(EXIT_FAILURE);
+    }
     chip8->stack.stack[chip8->registers.PC] = val;
     chip8->registers.PC++;
 }
@@ -15,6 +17,9 @@ void chip8_stack_push(chip8_t *chip8, uint16_t val) {
 uint16_t chip8_stack_pop(chip8_t *chip8)
 {
     chip8->registers.SP--;
-    // ???????? Supposed to terminate program if the stack pointer gets decremented out-of-bounds
-    // Cant just change the state flag here and allow the program to keep running
+    if (chip8->registers.PC > CHIP8_STACK_DEPTH) {
+        fprintf(stderr, "CHIP-8 FATAL ERROR: Stack underflow!\n");
+        exit(EXIT_FAILURE);
+    }
+    return chip8->stack.stack[chip8->registers.SP];
 }

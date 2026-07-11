@@ -2,11 +2,11 @@
 #include <stdlib.h>
 #include "chip8_memory.h"
 
-static int chip8_memory_in_bounds(uint16_t index)
+static void chip8_memory_in_bounds(uint16_t index)
 {
-    if (0 > index || CHIP8_MEMORY_SIZE <= index) {
-        fprintf(stderr, "Attempt to access memory out of bounds. Exiting...\n");
-        return -1;
+    if (index < 0 || index >= CHIP8_MEMORY_SIZE) {
+        fprintf(stderr, "CHIP-8 FATAL ERROR: Attempt to access memory out of bounds.\n");
+        exit(EXIT_FAILURE);
     }
 }
 
