@@ -20,6 +20,7 @@ target_sources(chip8
     src/chip8_keyboard.c
     src/chip8_memory.c
     src/chip8_stack.c
+    src/chip8.c
 )
 
 # Link to the actual SDL3 library.
