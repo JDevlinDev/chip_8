@@ -11,4 +11,5 @@ typedef struct chip8_stack
 } chip8_stack_t;
 
 void chip8_stack_push(chip8_t *chip8, uint16_t val);
-void chip8_stack_pop(chip8_t *chip8);
+uint16_t chip8_stack_pop(chip8_t *chip8);
+void chip8_stack_in_bounds(chip8_t *chip8);
