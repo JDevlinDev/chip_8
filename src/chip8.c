@@ -25,5 +25,5 @@ static const uint8_t chip8_default_character_set[] = {
 void chip8_init(chip8_t *chip8)
 {
     memset(chip8, 0, sizeof(chip8_t));
-    memcpy(&chip8->memory, chip8_default_character_set, sizeof(chip8_default_character_set));
+    memcpy(&chip8->memory.memory, chip8_default_character_set, sizeof(chip8_default_character_set));
 }

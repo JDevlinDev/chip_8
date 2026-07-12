@@ -36,7 +36,8 @@ SDL_AppResult SDL_AppInit(void **appstate, int argc, char *argv[])
             CHIP8_SCREEN_HEIGHT,
             SDL_LOGICAL_PRESENTATION_LETTERBOX);
 
-    chip8_set_pixel(&emulator.screen, 0, 0);
+    chip8_init(&emulator);
+    chip8_draw_sprite(&emulator.screen, 63, 10, emulator.memory.memory, 5);
     return SDL_APP_CONTINUE;  /* carry on with the program! */
 }
 
@@ -65,7 +66,6 @@ SDL_AppResult SDL_AppIterate(void *appstate)
     for (int x = 0; x < CHIP8_SCREEN_WIDTH; x++) {
         for (int y = 0; y < CHIP8_SCREEN_HEIGHT; y++) {
             if (chip8_pixel_is_set(&emulator.screen, x, y)) {
-                printf("Pixel (%d, %d) was set.\n");
                 SDL_FRect pixel;
                 pixel.x = x;
                 pixel.y = y;
