@@ -2,8 +2,11 @@
 
 #include <stdint.h>
 
-#include "chip8.h"
 #include "chip8_config.h"
+#include "chip8.h"
+
+
+typedef struct chip8 chip8_t;
 
 typedef struct chip8_stack
 {

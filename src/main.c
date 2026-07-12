@@ -10,7 +10,7 @@
 
 static SDL_Window *window = NULL;
 static SDL_Renderer *renderer = NULL;
-static chip8_t chip8_emulator;
+static chip8_t emulator;
 
 SDL_AppResult SDL_AppInit(void **appstate, int argc, char *argv[])
 {
@@ -33,10 +33,10 @@ SDL_AppResult SDL_AppInit(void **appstate, int argc, char *argv[])
     SDL_SetRenderLogicalPresentation(
             renderer,
             CHIP8_SCREEN_WIDTH,
-            CHIP8_WINDOW_HEIGHT,
+            CHIP8_SCREEN_HEIGHT,
             SDL_LOGICAL_PRESENTATION_LETTERBOX);
 
-    chip8_set_pixel(&chip8_emulator.screen, 1, 1);
+    chip8_set_pixel(&emulator.screen, 0, 0);
     return SDL_APP_CONTINUE;  /* carry on with the program! */
 }
 
@@ -64,10 +64,14 @@ SDL_AppResult SDL_AppIterate(void *appstate)
    
     for (int x = 0; x < CHIP8_SCREEN_WIDTH; x++) {
         for (int y = 0; y < CHIP8_SCREEN_HEIGHT; y++) {
-            if (chip8_pixel_is_set(&chip8_emulator.screen, x, y)) {
-                SDL_Point pixel;
+            if (chip8_pixel_is_set(&emulator.screen, x, y)) {
+                printf("Pixel (%d, %d) was set.\n");
+                SDL_FRect pixel;
                 pixel.x = x;
                 pixel.y = y;
+                pixel.w = 1;
+                pixel.h = 1;
+                SDL_RenderFillRect(renderer, &pixel);
             }
         }
     }
