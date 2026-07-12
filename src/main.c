@@ -57,6 +57,7 @@ SDL_AppResult SDL_AppEvent(void *appstate, SDL_Event *event)
 
 SDL_AppResult SDL_AppIterate(void *appstate)
 {
+    
     SDL_SetRenderDrawColor(renderer, 10, 10, 10, SDL_ALPHA_OPAQUE);
     
     SDL_RenderClear(renderer);
@@ -77,7 +78,31 @@ SDL_AppResult SDL_AppIterate(void *appstate)
     }
     SDL_RenderPresent(renderer);
 
-    return SDL_APP_CONTINUE;  /* carry on with the program! */
+    static uint64_t last_time = 0;
+    static float timer_accumulator = 0.0f;
+
+    if (last_time == 0)
+        last_time = SDL_GetTicks(); // SDL_GetTicks() returns milliseconds
+
+    uint64_t current_time = SDL_GetTicks();
+    float delta_time = (float)(current_time - last_time);
+    last_time = current_time;
+
+    timer_accumulator += delta_time;
+
+    while (timer_accumulator >= CHIP8_TICK_RATE) {
+        if (emulator.registers.delay_timer > 0) {
+            emulator.registers.delay_timer--;
+        }
+
+        if (emulator.registers.sound_timer > 0) {
+            emulator.registers.sound_timer--;
+        }
+
+        timer_accumulator -= CHIP8_TICK_RATE;
+    }
+
+    return SDL_APP_CONTINUE;
 }
 
 void SDL_AppQuit(void *appstate, SDL_AppResult result)
