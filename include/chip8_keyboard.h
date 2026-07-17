@@ -5,7 +5,7 @@
 #include "chip8_config.h"
 #include "chip8_keyboard.h"
 
-typedef struct {
+typedef struct chip8_keyboard {
     bool keys[CHIP8_TOTAL_KEYS];
 } chip8_keyboard_t;
 

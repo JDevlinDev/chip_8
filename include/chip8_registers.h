@@ -3,7 +3,7 @@
 #include <stdint.h>
 #include "chip8_config.h"
 
-typedef struct
+typedef struct chip8_registers
 {
     uint8_t V[CHIP8_REGISTER_COUNT];        /* General purpose registers */
     uint16_t I;                             /* Stores memory addresses */

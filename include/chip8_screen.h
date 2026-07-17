@@ -6,7 +6,7 @@
 #include "chip8_config.h"
 
 
-typedef struct
+typedef struct chip8_screen
 {
     bool pixels[CHIP8_SCREEN_HEIGHT][CHIP8_SCREEN_WIDTH];
 } chip8_screen_t;

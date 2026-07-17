@@ -10,7 +10,7 @@ static void chip8_memory_in_bounds(int index)
     }
 }
 
-int chip8_memory_set(chip8_memory_t *memory, int index, int value)
+int chip8_memory_set(chip8_memory_t *memory, int index, uint8_t value)
 {
     chip8_memory_in_bounds(index);
     memory->memory[index] = value;

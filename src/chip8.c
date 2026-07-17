@@ -68,7 +68,7 @@ size_t chip8_fopen(char *fname, uint8_t **buf)
 
 uint16_t chip8_fetch(chip8_t *chip8)
 {
-    uint16_t opcode = chip8_memory_get_opcode(chip8, chip8->registers.PC);
+    uint16_t opcode = chip8_memory_get_opcode(&chip8->memory, chip8->registers.PC);
     chip8->registers.PC += 2;
     return opcode;
 }
