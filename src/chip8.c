@@ -1,4 +1,7 @@
 #include <string.h>
+#include <stdlib.h>
+#include <stdio.h>
+#include <stddef.h>
 
 #include "chip8.h"
 #include "chip8_config.h"
@@ -22,8 +25,43 @@ static const uint8_t chip8_default_character_set[] = {
     0xF0, 0x80, 0xF0, 0x80, 0x80  // F
 };
 
+
+
 void chip8_init(chip8_t *chip8)
 {
     memset(chip8, 0, sizeof(chip8_t));
     memcpy(&chip8->memory.memory, chip8_default_character_set, sizeof(chip8_default_character_set));
+}
+
+void chip8_load(chip8_t *chip8, const uint8_t *buf, size_t size)
+{
+    if ((size + CHIP8_PROGRAM_LOAD_ADDRESS) >= CHIP8_MEMORY_SIZE) {
+        fprintf(stderr, "Program exceeds maximum memory size!\n");
+        exit(EXIT_FAILURE);
+    }
+    memcpy(&chip8->memory.memory[CHIP8_PROGRAM_LOAD_ADDRESS], buf, size);
+    chip8->registers.PC = CHIP8_PROGRAM_LOAD_ADDRESS;
+}
+
+size_t chip8_fopen(char *fname, uint8_t **buf)
+{
+    FILE *f = fopen(fname, "r");
+
+    if (!f) {
+        fprintf(stderr, "Failed to open the file\n");
+        return 0;
+    }
+
+    fseek(f, 0, SEEK_END);
+    long fsize = ftell(f);
+    fseek(f, 0, SEEK_SET);
+
+    uint8_t buffer[fsize];
+    int res = fread(buf, fsize, 1, f);
+    if (res != 1) {
+        fprintf(stderr, "Failed to read from the file\n");
+        return 0;
+    }
+    *buf = buffer;
+    return fsize;
 }
