@@ -8,7 +8,7 @@
 
 typedef struct chip8 chip8_t;
 
-typedef struct chip8_stack
+typedef struct
 {
     uint16_t stack[CHIP8_STACK_DEPTH];
 } chip8_stack_t;

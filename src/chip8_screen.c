@@ -40,3 +40,12 @@ bool chip8_draw_sprite(chip8_screen_t *screen, int x, int y, uint8_t *sprite, in
     }
     return collision;
 }
+
+void chip8_clear_screen(chip8_screen_t *screen)
+{
+    for (int y = 0; y < CHIP8_SCREEN_HEIGHT; y++) {
+        for (int x = 0; x < CHIP8_SCREEN_WIDTH; x++) {
+            screen->pixels[y][x] = false;
+        }
+    }
+}

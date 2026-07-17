@@ -3,7 +3,7 @@
 #include <stdint.h>
 #include "chip8_config.h"
 
-typedef struct chip8_memory
+typedef struct
 {
     uint8_t memory[CHIP8_MEMORY_SIZE];
 } chip8_memory_t;

@@ -9,7 +9,7 @@
 #include "chip8_stack.h"
 #include "chip8_screen.h"
 
-typedef struct chip8
+typedef struct
 {
     chip8_memory_t memory;
     chip8_stack_t stack;

@@ -80,6 +80,8 @@ SDL_AppResult SDL_AppIterate(void *appstate)
 
     static uint64_t last_time = 0;
     static float timer_accumulator = 0.0f;
+    static uint64_t frame_counter = 0;
+    static uint64_t seconds_elapsed = 0;
 
     if (last_time == 0)
         last_time = SDL_GetTicks(); // SDL_GetTicks() returns milliseconds
@@ -100,6 +102,13 @@ SDL_AppResult SDL_AppIterate(void *appstate)
         }
 
         timer_accumulator -= CHIP8_TICK_RATE;
+
+        frame_counter++;
+        if (frame_counter >= 60) {
+            seconds_elapsed++;
+            printf("%d seconds elapsed\n", seconds_elapsed);
+            frame_counter = 0;
+        }
     }
 
     return SDL_APP_CONTINUE;
