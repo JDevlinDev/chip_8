@@ -12,6 +12,7 @@ build
 
 # Third-party libraries
 third_party
+games
 
 # OS-generated files
 .DS_Store
