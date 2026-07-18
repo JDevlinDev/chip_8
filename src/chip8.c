@@ -6,7 +6,6 @@
 #include <errno.h>
 
 #include "chip8.h"
-#include "chip8_config.h"
 
 static const uint8_t chip8_default_character_set[] = {
     0xF0, 0x90, 0x90, 0x90, 0xF0, // 0
@@ -46,21 +45,38 @@ static void chip8_decode_exec(chip8_t *chip8, uint16_t opcode)
     uint16_t nnn = 0x0fff & opcode;
 
     switch(0xf000 & opcode) {
+
         /* JP addr: Jump to location nnn */
         case 0x1000:
             chip8->registers.PC = nnn;
             break;
+
+        /* LD Vn, byte: puts the value nn into register V[x] */
         case 0x6000:
             chip8->registers.V[x] = nn;
             break;
+
+        /* ADD Vx, byte: Adds the value nn to the value of register V[x], then stores the result in V[x] */
         case 0x7000:
             chip8->registers.V[x] += nn;
             break;
+
+        /* LD I, addr: The value of register I is set to nnn */
         case 0xa000:
             chip8->registers.I = nnn;
             break;
+
+        /* DRW V[x], V[y], nibble: Display n-byte sprite starting at memory location I at (V[x], V[y]), set VF = collision */
         case 0xd000:
+            chip8_draw_sprite(
+                &chip8->screen,
+                chip8->registers.V[x],
+                chip8->registers.V[y],
+                &chip8->memory.memory[chip8->registers.I],
+                n);
             break;
+
+        /*  */
         
     }
 }

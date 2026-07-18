@@ -40,7 +40,6 @@ SDL_AppResult SDL_AppInit(void **appstate, int argc, char *argv[])
             SDL_LOGICAL_PRESENTATION_LETTERBOX);
 
     chip8_init(&c8_emulator);
-    chip8_draw_sprite(&c8_emulator.screen, 63, 10, c8_emulator.memory.memory, 5);
 
     char *filename;
     if (argc > 1) {
@@ -98,39 +97,44 @@ SDL_AppResult SDL_AppIterate(void *appstate)
     SDL_RenderPresent(renderer);
 
     static uint64_t last_time = 0;
-    static float timer_accumulator = 0.0f;
+    static uint64_t timer_accumulator = 0;
     static uint64_t frame_counter = 0;
     static uint64_t seconds_elapsed = 0;
 
     if (last_time == 0)
-        last_time = SDL_GetTicks(); // SDL_GetTicks() returns milliseconds
+        last_time = SDL_GetTicksNS(); // SDL_GetTicksNS() returns nanoseconds
 
-    uint64_t current_time = SDL_GetTicks();
-    float delta_time = (float)(current_time - last_time);
+    uint64_t current_time = SDL_GetTicksNS();
+    uint64_t delta_time = current_time - last_time;
     last_time = current_time;
 
     timer_accumulator += delta_time;
 
-    
-    while (timer_accumulator >= CHIP8_TICK_RATE) {
-        if (c8_emulator.registers.delay_timer > 0) {
-            c8_emulator.registers.delay_timer--;
-        }
-        
-        if (c8_emulator.registers.sound_timer > 0) {
-            c8_emulator.registers.sound_timer--;
-        }
-        
-        timer_accumulator -= CHIP8_TICK_RATE;
-        
-        frame_counter++;
-        if (frame_counter >= 20) {
-            seconds_elapsed++;
-            uint16_t opcode = chip8_fetch(&c8_emulator);
-            printf("Next opcode: 0x%x\n", opcode);
-            frame_counter = 0;
-        }
+    while (timer_accumulator >= CHIP8_CLOCK_RATE_NS) {
+        uint16_t next_instruction = chip8_fetch(&c8_emulator);
+        chip8_exec(&c8_emulator, next_instruction);
+        timer_accumulator -= CHIP8_CLOCK_RATE_NS;
     }
+    
+    // while (timer_accumulator >= CHIP8_TIMER_RATE) {
+    //     if (c8_emulator.registers.delay_timer > 0) {
+    //         c8_emulator.registers.delay_timer--;
+    //     }
+        
+    //     if (c8_emulator.registers.sound_timer > 0) {
+    //         c8_emulator.registers.sound_timer--;
+    //     }
+        
+    //     timer_accumulator -= CHIP8_TIMER_RATE;
+        
+    //     frame_counter++;
+    //     if (frame_counter >= 20) {
+    //         seconds_elapsed++;
+    //         uint16_t opcode = chip8_fetch(&c8_emulator);
+    //         printf("Next opcode: 0x%x\n", opcode);
+    //         frame_counter = 0;
+    //     }
+    // }
 
     return SDL_APP_CONTINUE;
 }
