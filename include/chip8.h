@@ -10,6 +10,14 @@
 #include "chip8_stack.h"
 #include "chip8_screen.h"
 
+/* Instruction decoding macros */
+#define CHIP8_NIBBLE_X(x)       (((x) & 0x0F00) >> 8)
+#define CHIP8_NIBBLE_Y(x)       ((x) & 0x00f0 >> 4)
+#define CHIP8_NIBBLE_N(x)       ((x) & 0x000f)
+#define CHIP8_NIBBLE_NN(x)      ((x) & 0x00ff)
+#define CHIP8_NIBBLE_NNN(x)     ((x) & 0x0fff)
+
+
 typedef struct chip8
 {
     chip8_memory_t      memory;

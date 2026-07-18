@@ -1,4 +1,4 @@
-# Yet Another CHIP-8 Emulator
+# Modern SDL3 CHIP-8 Emulator
 
 Yes, it's another CHIP-8 emulator. 
 

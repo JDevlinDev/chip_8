@@ -22,6 +22,7 @@ target_sources(chip8
     src/chip8_stack.c
     src/chip8.c
     src/chip8_screen.c
+    src/chip8_context.c
 )
 
 # Link to the actual SDL3 library.

@@ -38,11 +38,11 @@ static void chip8_pmem(chip8_t *chip8, const uint8_t *buf, size_t size)
 
 static void chip8_decode_exec(chip8_t *chip8, uint16_t opcode)
 {
-    uint8_t x = (0x0f00 & opcode) >> 8;
-    uint8_t y = (0x00f0 & opcode) >> 4;
-    uint8_t n = 0x000f & opcode;
-    uint8_t nn = 0x00ff & opcode;
-    uint16_t nnn = 0x0fff & opcode;
+    uint8_t x = CHIP8_NIBBLE_X(opcode);
+    uint8_t y = CHIP8_NIBBLE_Y(opcode);
+    uint8_t n = CHIP8_NIBBLE_N(opcode);
+    uint8_t nn = CHIP8_NIBBLE_NN(opcode);
+    uint16_t nnn = CHIP8_NIBBLE_NNN(opcode);
 
     switch(0xf000 & opcode) {
 
