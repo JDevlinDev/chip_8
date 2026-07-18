@@ -16,3 +16,5 @@ void chip8_set_pixel(chip8_screen_t *screen, int x, int y);
 bool chip8_pixel_is_set(chip8_screen_t *screen, int x, int y);
 
 bool chip8_draw_sprite(chip8_screen_t *screen, int x, int y, uint8_t *sprite, int num_bytes);
+
+void chip8_clear_screen(chip8_screen_t *screen);

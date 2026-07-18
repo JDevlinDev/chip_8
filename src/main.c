@@ -50,7 +50,7 @@ SDL_AppResult SDL_AppInit(void **appstate, int argc, char *argv[])
         printf("File was not provided\n");
         exit(EXIT_FAILURE);
     }
-    size_t fsize = chip8_load_program(&c8_emulator, filename);
+    size_t fsize = chip8_load(&c8_emulator, filename);
 
     if (fsize == 0) {
         fprintf(stderr, "Failed to load file\n");
@@ -126,7 +126,7 @@ SDL_AppResult SDL_AppIterate(void *appstate)
         frame_counter++;
         if (frame_counter >= 20) {
             seconds_elapsed++;
-            uint16_t opcode = chip8_fetch_instruction(&c8_emulator);
+            uint16_t opcode = chip8_fetch(&c8_emulator);
             printf("Next opcode: 0x%x\n", opcode);
             frame_counter = 0;
         }

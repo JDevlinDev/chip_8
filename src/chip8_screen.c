@@ -1,5 +1,6 @@
 #include <stdlib.h>
 #include <stdio.h>
+#include <memory.h>
 
 #include "chip8_screen.h"
 
@@ -43,9 +44,5 @@ bool chip8_draw_sprite(chip8_screen_t *screen, int x, int y, uint8_t *sprite, in
 
 void chip8_clear_screen(chip8_screen_t *screen)
 {
-    for (int y = 0; y < CHIP8_SCREEN_HEIGHT; y++) {
-        for (int x = 0; x < CHIP8_SCREEN_WIDTH; x++) {
-            screen->pixels[y][x] = false;
-        }
-    }
+    memset(screen, 0, CHIP8_SCREEN_HEIGHT * CHIP8_SCREEN_WIDTH);
 }

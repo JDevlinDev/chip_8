@@ -27,15 +27,7 @@ static const uint8_t chip8_default_character_set[] = {
     0xF0, 0x80, 0xF0, 0x80, 0x80  // F
 };
 
-
-
-void chip8_init(chip8_t *chip8)
-{
-    memset(chip8, 0, sizeof(chip8_t));
-    memcpy(&chip8->memory.memory, chip8_default_character_set, sizeof(chip8_default_character_set));
-}
-
-void chip8_pmem(chip8_t *chip8, const uint8_t *buf, size_t size)
+static void chip8_pmem(chip8_t *chip8, const uint8_t *buf, size_t size)
 {
     if ((size + CHIP8_PROGRAM_LOAD_ADDRESS) >= CHIP8_MEMORY_SIZE) {
         fprintf(stderr, "Program exceeds maximum memory size!\n");
@@ -45,7 +37,41 @@ void chip8_pmem(chip8_t *chip8, const uint8_t *buf, size_t size)
     chip8->registers.PC = CHIP8_PROGRAM_LOAD_ADDRESS;
 }
 
-size_t chip8_load_program(chip8_t *chip8, char *fname)
+static void chip8_decode_exec(chip8_t *chip8, uint16_t opcode)
+{
+    uint8_t x = (0x0f00 & opcode) >> 8;
+    uint8_t y = (0x00f0 & opcode) >> 4;
+    uint8_t n = 0x000f & opcode;
+    uint8_t nn = 0x00ff & opcode;
+    uint16_t nnn = 0x0fff & opcode;
+
+    switch(0xf000 & opcode) {
+        /* JP addr: Jump to location nnn */
+        case 0x1000:
+            chip8->registers.PC = nnn;
+            break;
+        case 0x6000:
+            chip8->registers.V[x] = nn;
+            break;
+        case 0x7000:
+            chip8->registers.V[x] += nn;
+            break;
+        case 0xa000:
+            chip8->registers.I = nnn;
+            break;
+        case 0xd000:
+            break;
+        
+    }
+}
+
+void chip8_init(chip8_t *chip8)
+{
+    memset(chip8, 0, sizeof(chip8_t));
+    memcpy(&chip8->memory.memory, chip8_default_character_set, sizeof(chip8_default_character_set));
+}
+
+size_t chip8_load(chip8_t *chip8, char *fname)
 {
     errno = 0;
     FILE *f = fopen(fname, "r");
@@ -71,9 +97,28 @@ size_t chip8_load_program(chip8_t *chip8, char *fname)
     return fsize;
 }
 
-uint16_t chip8_fetch_instruction(chip8_t *chip8)
+uint16_t chip8_fetch(chip8_t *chip8)
 {
     uint16_t opcode = chip8_memory_get_opcode(&chip8->memory, chip8->registers.PC);
     chip8->registers.PC += 2;
     return opcode;
+}
+
+void chip8_exec(chip8_t *chip8, uint16_t opcode)
+{
+    switch(opcode) { 
+
+        /* CLS: Clear the screen */
+        case 0x00E0:
+            chip8_clear_screen(&chip8->screen);
+            break;
+
+        /* RET: Return from a subroutine */
+        case 0x00EE:
+            chip8->registers.PC = chip8_stack_pop(chip8);
+            break;
+        default:
+            chip8_decode_exec(chip8, opcode);
+    }
+
 }

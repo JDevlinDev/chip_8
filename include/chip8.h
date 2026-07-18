@@ -20,7 +20,7 @@ typedef struct chip8
 } chip8_t;
 
 void        chip8_init(chip8_t *chip8);
-uint16_t    chip8_fetch_instruction(chip8_t *chip8);
+uint16_t    chip8_fetch(chip8_t *chip8);
 void        chip8_exec(chip8_t *chip8, uint16_t opcode);
 
-size_t      chip8_load_program(chip8_t *chip8, char *fname);
+size_t      chip8_load(chip8_t *chip8, char *fname);
