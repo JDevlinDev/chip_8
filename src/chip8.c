@@ -2,6 +2,8 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <stddef.h>
+#include <stdint.h>
+#include <errno.h>
 
 #include "chip8.h"
 #include "chip8_config.h"
@@ -33,7 +35,7 @@ void chip8_init(chip8_t *chip8)
     memcpy(&chip8->memory.memory, chip8_default_character_set, sizeof(chip8_default_character_set));
 }
 
-void chip8_load(chip8_t *chip8, const uint8_t *buf, size_t size)
+void chip8_pmem(chip8_t *chip8, const uint8_t *buf, size_t size)
 {
     if ((size + CHIP8_PROGRAM_LOAD_ADDRESS) >= CHIP8_MEMORY_SIZE) {
         fprintf(stderr, "Program exceeds maximum memory size!\n");
@@ -43,12 +45,13 @@ void chip8_load(chip8_t *chip8, const uint8_t *buf, size_t size)
     chip8->registers.PC = CHIP8_PROGRAM_LOAD_ADDRESS;
 }
 
-size_t chip8_fopen(char *fname, uint8_t **buf)
+size_t chip8_load_program(chip8_t *chip8, char *fname)
 {
+    errno = 0;
     FILE *f = fopen(fname, "r");
 
     if (!f) {
-        fprintf(stderr, "Failed to open the file\n");
+        fprintf(stderr, "Error opening file: %s\n", strerror(errno));
         return 0;
     }
 
@@ -56,17 +59,19 @@ size_t chip8_fopen(char *fname, uint8_t **buf)
     long fsize = ftell(f);
     fseek(f, 0, SEEK_SET);
 
-    uint8_t buffer[fsize];
-    int res = fread(buf, fsize, 1, f);
+    uint8_t buffer[CHIP8_MEMORY_SIZE];
+    int res = fread(buffer, fsize, 1, f);
     if (res != 1) {
-        fprintf(stderr, "Failed to read from the file\n");
+        fclose(f);
         return 0;
     }
-    *buf = buffer;
+    fclose(f);
+    chip8_pmem(chip8, buffer, fsize);
+
     return fsize;
 }
 
-uint16_t chip8_fetch(chip8_t *chip8)
+uint16_t chip8_fetch_instruction(chip8_t *chip8)
 {
     uint16_t opcode = chip8_memory_get_opcode(&chip8->memory, chip8->registers.PC);
     chip8->registers.PC += 2;
