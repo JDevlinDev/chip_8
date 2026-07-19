@@ -133,12 +133,12 @@ SDL_AppResult SDL_AppIterate(void *appstate)
     }
     
     // while (timer_accumulator >= CHIP8_TIMER_RATE) {
-    //     if (c8_emulator.registers.delay_timer > 0) {
-    //         c8_emulator.registers.delay_timer--;
+    //     if (c8_emulator.registers.DT > 0) {
+    //         c8_emulator.registers.DT--;
     //     }
         
-    //     if (c8_emulator.registers.sound_timer > 0) {
-    //         c8_emulator.registers.sound_timer--;
+    //     if (c8_emulator.registers.ST > 0) {
+    //         c8_emulator.registers.ST--;
     //     }
         
     //     timer_accumulator -= CHIP8_TIMER_RATE;
