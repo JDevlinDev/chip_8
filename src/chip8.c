@@ -6,7 +6,6 @@
 #include <errno.h>
 
 #include <SDL3/SDL_stdinc.h>
-#include <SDL3/SDL_assert.h>
 #include <SDL3/SDL_events.h>
 #include <SDL3/SDL_scancode.h>
 
@@ -196,7 +195,7 @@ static void chip8_decode_exec(chip8_t *chip8, uint16_t opcode)
 
     case 0xe000:
         switch(nn) {
-            
+
         /* SKP V[x]: Skip next instruction if key with the value of V[x] is pressed */
         case 0x9e:
             if (chip8_keyboard_is_down(&chip8->keyboard, chip8->registers.V[x]))
