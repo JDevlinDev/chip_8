@@ -7,6 +7,7 @@
 
 typedef struct chip8_keyboard {
     bool keys[CHIP8_TOTAL_KEYS];
+    bool waiting_for_key;
 } chip8_keyboard_t;
 
 void chip8_keyboard_down(chip8_keyboard_t *keyboard, int key);

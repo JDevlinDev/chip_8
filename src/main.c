@@ -82,6 +82,7 @@ SDL_AppResult SDL_AppIterate(void *appstate)
 
     SDL_SetRenderDrawColor(renderer, 250, 250, 250, SDL_ALPHA_OPAQUE);
    
+    /* TODO: Extract this loop to C8_DrawScreen() */
     for (int x = 0; x < CHIP8_SCREEN_WIDTH; x++) {
         for (int y = 0; y < CHIP8_SCREEN_HEIGHT; y++) {
             if (chip8_pixel_is_set(&c8_emulator.screen, x, y)) {
@@ -98,8 +99,6 @@ SDL_AppResult SDL_AppIterate(void *appstate)
 
     static uint64_t last_time = 0;
     static uint64_t timer_accumulator = 0;
-    static uint64_t frame_counter = 0;
-    static uint64_t seconds_elapsed = 0;
 
     if (last_time == 0)
         last_time = SDL_GetTicksNS(); // SDL_GetTicksNS() returns nanoseconds

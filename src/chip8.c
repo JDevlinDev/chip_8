@@ -5,6 +5,11 @@
 #include <stdint.h>
 #include <errno.h>
 
+#include <SDL3/SDL_stdinc.h>
+#include <SDL3/SDL_assert.h>
+#include <SDL3/SDL_events.h>
+#include <SDL3/SDL_scancode.h>
+
 #include "chip8.h"
 
 static const uint8_t chip8_default_character_set[] = {
@@ -28,7 +33,8 @@ static const uint8_t chip8_default_character_set[] = {
 
 static void chip8_pmem(chip8_t *chip8, const uint8_t *buf, size_t size)
 {
-    if ((size + CHIP8_PROGRAM_LOAD_ADDRESS) >= CHIP8_MEMORY_SIZE) {
+    if ((size + CHIP8_PROGRAM_LOAD_ADDRESS) >= CHIP8_MEMORY_SIZE)
+    {
         fprintf(stderr, "Program exceeds maximum memory size!\n");
         exit(EXIT_FAILURE);
     }
@@ -44,40 +50,169 @@ static void chip8_decode_exec(chip8_t *chip8, uint16_t opcode)
     uint8_t nn = CHIP8_NIBBLE_NN(opcode);
     uint16_t nnn = CHIP8_NIBBLE_NNN(opcode);
 
-    switch(0xf000 & opcode) {
+    switch (0xf000 & opcode)
+    {
 
-        /* JP addr: Jump to location nnn */
-        case 0x1000:
-            chip8->registers.PC = nnn;
+    /* JP addr: Jump to location nnn */
+    case 0x1000:
+        chip8->registers.PC = nnn;
+        break;
+
+    /* CALL addr: Call subroutine at nnn. */
+    case 0x2000:
+        chip8_stack_push(chip8, chip8->registers.PC);
+        chip8->registers.PC = nnn;
+        break;
+
+    /* SE V[x], byte: Skip next instruction if V[x] == nn. */
+    case 0x3000:
+        if (chip8->registers.V[x] == nn)
+            chip8->registers.PC += 2;
+        break;
+
+    /* SNE V[x], byte: Skip next instruction if V[x] != nn */
+    case 0x4000:
+        if (chip8->registers.V[x] != nn)
+            chip8->registers.PC += 2;
+        break;
+    
+    /* SE V[x], V[y]: Skip next instruction if V[x] == V[y] */
+    case 0x5000:
+        if(chip8->registers.V[x] == chip8->registers.V[y])
+            chip8->registers.PC += 2;
+        break;
+
+    /* LD V[x], byte: puts the value nn into register V[x] */
+    case 0x6000:
+        chip8->registers.V[x] = nn;
+        break;
+
+    /* ADD V[x], byte: Adds the value nn to the value of register V[x], then stores the result in V[x] */
+    case 0x7000:
+        chip8->registers.V[x] += nn;
+        break;
+
+    case 0x8000:
+        switch(n) {
+
+            /* OR V[x], V[y]: Set V[x] = V[x] OR V[y] */
+            case 0x01:
+                chip8->registers.V[x] |= chip8->registers.V[y];
+                break;
+            
+            /* AND V[x], V[y]: Set V[x] = V[x] AND V[y] */
+            case 0x02:
+                chip8->registers.V[x] &= chip8->registers.V[y];
+                break;
+
+            /* XOR V[x], V[y]: Set V[x] = V[x] XOR V[y] */
+            case 0x03:
+                chip8->registers.V[x] ^= chip8->registers.V[y];
+                break;
+            
+            /* ADD V[x], V[y]: Set V[x] = V[x] + V[y], set V[F] = carry */    
+            case 0x04:
+                chip8->registers.V[CHIP8_VF] = 0;
+                if (chip8->registers.V[x] + chip8->registers.V[y] > 0xff)
+                    chip8->registers.V[CHIP8_VF] = 1;
+                chip8->registers.V[x] += chip8->registers.V[y];
+                break;
+
+            /* SUB V[x], V[y]: Set V[x] = V[x] - V[y], set V[F] = NOT borrow. */
+            case 0x05:
+                chip8->registers.V[CHIP8_VF] = 0;
+                if (chip8->registers.V[x] > chip8->registers.V[y])
+                    chip8->registers.V[CHIP8_VF] = 1;
+                chip8->registers.V[x] -= chip8->registers.V[y];
+
+            /* SHR V[x] {, Vy}: Set V[x] = V[x] SHR 1 */
+            case 0x06:
+                chip8->registers.V[CHIP8_VF] = 0;
+                if ((chip8->registers.V[x] & 0x01) == 1)
+                    chip8->registers.V[CHIP8_VF] = 1;
+                chip8->registers.V[x] /= 2;
+                break;
+
+            /* SUBN V[x], V[y]: Set V[x] = V[y] - V[x], set V[F] = NOT borrow */
+            case 0x07:
+                chip8->registers.V[CHIP8_VF] = 0;
+                if (chip8->registers.V[y] > chip8->registers.V[x])
+                    chip8->registers.V[CHIP8_VF] = 1;
+                chip8->registers.V[x] = chip8->registers.V[y] - chip8->registers.V[x];
+                break;
+
+            /* SHL Vx {, Vy}: Set Vx = Vx SHL 1 */
+            case 0x0e:
+                chip8->registers.V[CHIP8_VF] = 0;
+                if ((chip8->registers.V[CHIP8_VF] & 0x80) == 0x80)
+                    chip8->registers.V[CHIP8_VF] = 1;
+                chip8->registers.V[x] *= 2;
+                break;
+        }
+        break;
+
+    /* SNE V[x], V[y]: Skip next instruction if V[x] != [Vy] */
+    case 0x9000:
+        if (chip8->registers.V[x] != chip8->registers.V[y])
+            chip8->registers.PC += 2;
+        break;
+
+    /* LD I, addr: The value of register I is set to nnn */
+    case 0xa000:
+        chip8->registers.I = nnn;
+        break;
+
+    /* JP V[0], addr: Jump to location nnn + V[0] */
+    case 0xb000:
+        chip8->registers.PC = nnn + chip8->registers.V[0];
+        break;
+
+    /* RND V[x], byte: Set V[x] = random byte AND nn */
+    case 0xc000:
+        chip8->registers.V[x] = SDL_rand(256) & nn;
+        break;
+
+    /* DRW V[x], V[y], nibble: Display n-byte sprite starting at memory location I at (V[x], V[y]), set VF = collision */
+    case 0xd000:
+        chip8_draw_sprite(
+            &chip8->screen,
+            chip8->registers.V[x],
+            chip8->registers.V[y],
+            &chip8->memory.memory[chip8->registers.I],
+            n);
+        break;
+
+    case 0xe000:
+            switch(nn) {
+
+                /* SKP V[x]: Skip next instruction if key with the value of V[x] is pressed */
+                case 0x9e:
+                    if (chip8_keyboard_is_down(&chip8->keyboard, chip8->registers.V[x]))
+                        chip8->registers.PC += 2;
+                    break;
+
+                /* SKNP V[x]: Skip next instruction if key with the value of V[x] is not pressed */
+                case 0xa1:
+                    if (!chip8_keyboard_is_down(&chip8->keyboard, chip8->registers.V[x]))
+                        chip8->registers.PC += 2;
+                    break;
+            }
             break;
 
-        /* LD Vn, byte: puts the value nn into register V[x] */
-        case 0x6000:
-            chip8->registers.V[x] = nn;
-            break;
+    case 0xf000:
+            switch(nn) {
 
-        /* ADD Vx, byte: Adds the value nn to the value of register V[x], then stores the result in V[x] */
-        case 0x7000:
-            chip8->registers.V[x] += nn;
-            break;
+                /* LD V[x], DT: Set V[x] = delay timer value */
+                case 0x07:
+                    chip8->registers.V[x] = chip8->registers.delay_timer;
+                    break;
 
-        /* LD I, addr: The value of register I is set to nnn */
-        case 0xa000:
-            chip8->registers.I = nnn;
-            break;
+                /* LD V[x], K: Wait for a key press, store the value of the key in V[x] */
+                case 0x0a:
+                    chip8->wait_for_keypress = true;
+                    break;
 
-        /* DRW V[x], V[y], nibble: Display n-byte sprite starting at memory location I at (V[x], V[y]), set VF = collision */
-        case 0xd000:
-            chip8_draw_sprite(
-                &chip8->screen,
-                chip8->registers.V[x],
-                chip8->registers.V[y],
-                &chip8->memory.memory[chip8->registers.I],
-                n);
-            break;
-
-        /*  */
-        
+            }
     }
 }
 
@@ -92,7 +227,8 @@ size_t chip8_load(chip8_t *chip8, char *fname)
     errno = 0;
     FILE *f = fopen(fname, "r");
 
-    if (!f) {
+    if (!f)
+    {
         fprintf(stderr, "Error opening file: %s\n", strerror(errno));
         return 0;
     }
@@ -103,7 +239,8 @@ size_t chip8_load(chip8_t *chip8, char *fname)
 
     uint8_t buffer[CHIP8_MEMORY_SIZE];
     int res = fread(buffer, fsize, 1, f);
-    if (res != 1) {
+    if (res != 1)
+    {
         fclose(f);
         return 0;
     }
@@ -122,19 +259,19 @@ uint16_t chip8_fetch(chip8_t *chip8)
 
 void chip8_exec(chip8_t *chip8, uint16_t opcode)
 {
-    switch(opcode) { 
+    switch (opcode)
+    {
 
-        /* CLS: Clear the screen */
-        case 0x00E0:
-            chip8_clear_screen(&chip8->screen);
-            break;
+    /* CLS: Clear the screen */
+    case 0x00E0:
+        chip8_clear_screen(&chip8->screen);
+        break;
 
-        /* RET: Return from a subroutine */
-        case 0x00EE:
-            chip8->registers.PC = chip8_stack_pop(chip8);
-            break;
-        default:
-            chip8_decode_exec(chip8, opcode);
+    /* RET: Return from a subroutine */
+    case 0x00EE:
+        chip8->registers.PC = chip8_stack_pop(chip8);
+        break;
+    default:
+        chip8_decode_exec(chip8, opcode);
     }
-
 }

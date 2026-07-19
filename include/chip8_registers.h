@@ -3,6 +3,8 @@
 #include <stdint.h>
 #include "chip8_config.h"
 
+#define CHIP8_VF 15
+
 typedef struct chip8_registers
 {
     uint8_t V[CHIP8_REGISTER_COUNT];        /* General purpose registers */
