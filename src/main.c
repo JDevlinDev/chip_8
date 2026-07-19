@@ -3,6 +3,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <stddef.h>
+#include <stdbool.h>
 
 #include <SDL3/SDL.h>
 #include <SDL3/SDL_main.h>
@@ -61,13 +62,27 @@ SDL_AppResult SDL_AppInit(void **appstate, int argc, char *argv[])
 
 SDL_AppResult SDL_AppEvent(void *appstate, SDL_Event *event)
 {
+    int key_toggled;
+
     switch (event->type) {
-    case SDL_EVENT_QUIT:
-        return SDL_APP_SUCCESS;
-    case SDL_EVENT_KEY_DOWN:
-        break;
-    case SDL_EVENT_KEY_UP:
-        break;
+        case SDL_EVENT_QUIT:
+            return SDL_APP_SUCCESS;
+        case SDL_EVENT_KEY_DOWN:
+            key_toggled = chip8_keyboard_map(event->key.scancode);
+            if (key_toggled != -1) {
+                if (c8_emulator.wait_for_keypress) {
+                    c8_emulator.registers.V[c8_emulator.keypress_register] = key_toggled;
+                    c8_emulator.wait_for_keypress = false;
+                }
+                chip8_keyboard_down(&c8_emulator.keyboard, key_toggled);
+            }
+            break;
+        case SDL_EVENT_KEY_UP:
+            key_toggled = chip8_keyboard_map(event->key.scancode);
+            if (key_toggled != -1) {
+                chip8_keyboard_up(&c8_emulator.keyboard, key_toggled);
+            }
+            break;
     }
     
     return SDL_APP_CONTINUE;  /* carry on with the program! */
@@ -98,21 +113,23 @@ SDL_AppResult SDL_AppIterate(void *appstate)
     SDL_RenderPresent(renderer);
 
     static uint64_t last_time = 0;
-    static uint64_t timer_accumulator = 0;
+    static uint64_t time_accumulator = 0;
 
     if (last_time == 0)
         last_time = SDL_GetTicksNS(); // SDL_GetTicksNS() returns nanoseconds
 
     uint64_t current_time = SDL_GetTicksNS();
-    uint64_t delta_time = current_time - last_time;
+    uint64_t time_delta = current_time - last_time;
     last_time = current_time;
 
-    timer_accumulator += delta_time;
+    time_accumulator += time_delta;
 
-    while (timer_accumulator >= CHIP8_CLOCK_RATE_NS) {
-        uint16_t next_instruction = chip8_fetch(&c8_emulator);
-        chip8_exec(&c8_emulator, next_instruction);
-        timer_accumulator -= CHIP8_CLOCK_RATE_NS;
+    while (time_accumulator >= CHIP8_CLOCK_RATE_NS) {
+        if (!c8_emulator.wait_for_keypress) {
+            uint16_t next_instruction = chip8_fetch(&c8_emulator);
+            chip8_exec(&c8_emulator, next_instruction);
+            time_accumulator -= CHIP8_CLOCK_RATE_NS;
+        }
     }
     
     // while (timer_accumulator >= CHIP8_TIMER_RATE) {

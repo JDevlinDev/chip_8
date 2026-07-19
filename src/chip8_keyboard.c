@@ -28,7 +28,7 @@ bool chip8_keyboard_is_down(chip8_keyboard_t *keyboard, int key)
     return (keyboard->keys[key] == true);
 }
 
-uint8_t chip8_keyboard_map(char key)
+uint8_t chip8_keyboard_map(SDL_Scancode key)
 {
     for (int i = 0; i < CHIP8_TOTAL_KEYS; i++) {
         if (keyboard_map[i] == key) return i;

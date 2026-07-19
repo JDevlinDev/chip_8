@@ -210,6 +210,7 @@ static void chip8_decode_exec(chip8_t *chip8, uint16_t opcode)
                 /* LD V[x], K: Wait for a key press, store the value of the key in V[x] */
                 case 0x0a:
                     chip8->wait_for_keypress = true;
+                    chip8->keypress_register = x;
                     break;
 
             }

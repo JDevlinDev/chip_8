@@ -2,6 +2,9 @@
 
 #include <stdint.h>
 #include <stdbool.h>
+
+#include <SDL3/SDL_scancode.h>
+
 #include "chip8_config.h"
 #include "chip8_keyboard.h"
 
@@ -16,4 +19,4 @@ void chip8_keyboard_up(chip8_keyboard_t *keyboard, int key);
 
 bool chip8_keyboard_is_down(chip8_keyboard_t *keyboard, int key);
 
-uint8_t chip8_keyboard_map(char key);
+uint8_t chip8_keyboard_map(SDL_Scancode key);

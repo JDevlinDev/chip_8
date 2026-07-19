@@ -26,7 +26,8 @@ typedef struct chip8
     chip8_keyboard_t    keyboard;
     chip8_screen_t      screen;
 
-    bool    wait_for_keypress;
+    bool        wait_for_keypress;
+    uint8_t     keypress_register; 
 } chip8_t;
 
 void        chip8_init(chip8_t *chip8);
