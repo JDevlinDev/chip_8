@@ -30,7 +30,7 @@ static const uint8_t chip8_default_character_set[] = {
     0xF0, 0x80, 0xF0, 0x80, 0x80  // F
 };
 
-static void chip8_pmem(Chip8_Emulator *chip8, const uint8_t *buf, size_t size)
+static void Chip8_PopulateMemory(Chip8_Emulator *chip8, const uint8_t *buf, size_t size)
 {
     if ((size + CHIP8_PROGRAM_LOAD_ADDRESS) >= CHIP8_MEMORY_SIZE)
     {
@@ -41,7 +41,7 @@ static void chip8_pmem(Chip8_Emulator *chip8, const uint8_t *buf, size_t size)
     chip8->registers.PC = CHIP8_PROGRAM_LOAD_ADDRESS;
 }
 
-static void chip8_load_bcd(Chip8_Emulator *chip8, uint8_t val)
+static void Chip8_LoadBCD(Chip8_Emulator *chip8, uint8_t val)
 {
     // Hundreds digit: divide by 100
     chip8->memory.memory[chip8->registers.I] = val / 100;
@@ -53,7 +53,7 @@ static void chip8_load_bcd(Chip8_Emulator *chip8, uint8_t val)
     chip8->memory.memory[chip8->registers.I + 2] = val % 10;
 }
 
-static void chip8_decode_exec(Chip8_Emulator *chip8, uint16_t opcode)
+static void Chip8_DecodeExecute(Chip8_Emulator *chip8, uint16_t opcode)
 {
     uint8_t x = CHIP8_NIBBLE_X(opcode);
     uint8_t y = CHIP8_NIBBLE_Y(opcode);
@@ -122,41 +122,31 @@ static void chip8_decode_exec(Chip8_Emulator *chip8, uint16_t opcode)
         
         /* ADD V[x], V[y]: Set V[x] = V[x] + V[y], set V[F] = carry */    
         case 0x04:
-            chip8->registers.V[CHIP8_VF] = 0;
-            if (chip8->registers.V[x] + chip8->registers.V[y] > 0xff)
-                chip8->registers.V[CHIP8_VF] = 1;
+            chip8->registers.V[CHIP8_VF] = (chip8->registers.V[x] + chip8->registers.V[y]) > 0xff;
             chip8->registers.V[x] += chip8->registers.V[y];
         break;
 
         /* SUB V[x], V[y]: Set V[x] = V[x] - V[y], set V[F] = NOT borrow. */
         case 0x05:
-            chip8->registers.V[CHIP8_VF] = 0;
-            if (chip8->registers.V[x] > chip8->registers.V[y])
-                chip8->registers.V[CHIP8_VF] = 1;
+            chip8->registers.V[CHIP8_VF] = chip8->registers.V[x] > chip8->registers.V[y];
             chip8->registers.V[x] -= chip8->registers.V[y];
         break;
 
         /* SHR V[x] {, Vy}: Set V[x] = V[x] SHR 1 */
         case 0x06:
-            chip8->registers.V[CHIP8_VF] = 0;
-            if ((chip8->registers.V[x] & 0x01) == 1)
-                chip8->registers.V[CHIP8_VF] = 1;
+            chip8->registers.V[CHIP8_VF] = chip8->registers.V[x] & 0x01;
             chip8->registers.V[x] /= 2;
         break;
 
         /* SUBN V[x], V[y]: Set V[x] = V[y] - V[x], set V[F] = NOT borrow */
         case 0x07:
-            chip8->registers.V[CHIP8_VF] = 0;
-            if (chip8->registers.V[y] > chip8->registers.V[x])
-                chip8->registers.V[CHIP8_VF] = 1;
+            chip8->registers.V[CHIP8_VF] = chip8->registers.V[y] > chip8->registers.V[x];
             chip8->registers.V[x] = chip8->registers.V[y] - chip8->registers.V[x];
         break;
 
         /* SHL Vx {, Vy}: Set Vx = Vx SHL 1 */
         case 0x0e:
-            chip8->registers.V[CHIP8_VF] = 0;
-            if ((chip8->registers.V[CHIP8_VF] & 0x80) == 0x80)
-                chip8->registers.V[CHIP8_VF] = 1;
+            chip8->registers.V[CHIP8_VF] = (chip8->registers.V[CHIP8_VF] & 0x80) >> 7;
             chip8->registers.V[x] *= 2;
         break;
         }
@@ -240,7 +230,7 @@ static void chip8_decode_exec(Chip8_Emulator *chip8, uint16_t opcode)
             break;
         /* Fx33 - LD B, Vx: Store BCD representation of Vx in memory locations I, I+1, and I+2. */
         case 0x33:
-            chip8_load_bcd(chip8, chip8->registers.V[x]);
+            Chip8_LoadBCD(chip8, chip8->registers.V[x]);
             break;
         
         /* LD [I], V[x]: Store registers V[0] through V[x] in memory starting at location I */
@@ -289,7 +279,7 @@ size_t Chip8_Load(Chip8_Emulator *chip8, char *fname)
         return 0;
     }
     fclose(f);
-    chip8_pmem(chip8, buffer, fsize);
+    Chip8_PopulateMemory(chip8, buffer, fsize);
 
     return fsize;
 }
@@ -316,6 +306,6 @@ void Chip8_Execute(Chip8_Emulator *chip8, uint16_t opcode)
         chip8->registers.PC = Chip8_Pop(chip8);
         break;
     default:
-        chip8_decode_exec(chip8, opcode);
+        Chip8_DecodeExecute(chip8, opcode);
     }
 }
