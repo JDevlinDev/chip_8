@@ -10,20 +10,22 @@
 
 typedef struct Chip8_Context {
     // Core Emulator
-    Chip8_Emulator      emulator;
-    Chip8_Time          time;
+   Chip8_Emulator    emulator;
+   Chip8_Time        time;
 
-    char        rom_filepath[256];
-    bool        is_running;
+   char     rom_filepath[256];
+   bool     is_running;
+   bool     wait;
+//    uint8_t   key_register;
 
-    // Statistics
-    uint64_t     instructions_executed;
-    uint64_t     frames_rendered;
-    float        current_fps;
+   // // Statistics
+   // uint64_t     instructions_executed;
+   // uint64_t     frames_rendered;
+   // float        current_fps;
 
-    // Frontend
-    SDL_Window   *window;
-    SDL_Renderer *renderer;
+   // Frontend
+   SDL_Window     *window;
+   SDL_Renderer   *renderer;
 } Chip8_Context;
 
 bool    Chip8_InitializeContext(Chip8_Context *ctx);
