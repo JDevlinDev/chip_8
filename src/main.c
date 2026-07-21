@@ -8,7 +8,7 @@
 #include <SDL3/SDL.h>
 #include <SDL3/SDL_main.h>
 
-#include "Chip8_interpreter.h"
+#include "Chip8_emulator.h"
 #include "Chip8_display.h"
 #include "Chip8_keyboard.h"
 
