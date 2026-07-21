@@ -14,7 +14,7 @@
 
 static SDL_Window *window = NULL;
 static SDL_Renderer *renderer = NULL;
-static Chip8_Interpreter c8_emulator;
+static Chip8_Emulator c8_emulator;
 
 SDL_AppResult SDL_AppInit(void **appstate, int argc, char *argv[])
 {

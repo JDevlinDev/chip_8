@@ -3,9 +3,9 @@
 #include <stdio.h>
 
 #include "Chip8_stack.h"
-#include "Chip8_interpreter.h"
+#include "Chip8_emulator.h"
 
-void Chip8_Push(Chip8_Interpreter *chip8, uint16_t val) {
+void Chip8_Push(Chip8_Emulator *chip8, uint16_t val) {
     if (chip8->registers.SP > CHIP8_STACK_DEPTH) {
         fprintf(stderr, "CHIP8 FATAL ERROR: Stack overflow!\n");
         exit(EXIT_FAILURE);
@@ -14,7 +14,7 @@ void Chip8_Push(Chip8_Interpreter *chip8, uint16_t val) {
     chip8->registers.SP++;
 }
 
-uint16_t Chip8_Pop(Chip8_Interpreter *chip8)
+uint16_t Chip8_Pop(Chip8_Emulator *chip8)
 {
     chip8->registers.SP--;
     if (chip8->registers.SP >= CHIP8_STACK_DEPTH) {

@@ -1,16 +1,12 @@
-# Modern SDL3 CHIP-8 Emulator
+# Chip-8 Emulator With Modern SDL3 and CMake
 
-Yes, it's another CHIP-8 emulator. 
 
-Welcome to the obligatory rite of passage for every aspiring systems programmer. While there are thousands of these on GitHub, this one isn't just a blind copy-paste from a tutorial. It is the byproduct of aggressively fighting the C compiler, questioning established design patterns, and figuring out how virtual hardware actually ticks under the hood. 
-
-Built from scratch, this project is an active deep dive into systems architecture, pointer mechanics, and memory safety—because C won't protect you, so you have to protect yourself.
 
 ## Architecture & Tech Stack
 
 * **Language:** Pure C
 * **Graphics & Input:** SDL3 (specifically utilizing the modern `SDL_MAIN_USE_CALLBACKS` event loop structure)
-* **Build System:** CMake 3.16
+* **Build System:** CMake 3.24
 * **Environment:** Debian 13
 * **Design Philosophy:** Heavily defensive programming. Features strict type safety and proper state-flag error handling instead of chaotic system panics.
 

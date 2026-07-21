@@ -2,7 +2,7 @@ add_executable(Chip8 main.c)
 
 target_sources(Chip8
    PRIVATE
-      Chip8_interpreter.c
+      Chip8_emulator.c
       Chip8_stack.c
       Chip8_memory.c
       Chip8_display.c
