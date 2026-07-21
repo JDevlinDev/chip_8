@@ -9,11 +9,9 @@
 
 typedef struct Chip8_Audio {
    
-   SDL_AudioStream *stream;
-
-   bool is_playing;
-
-   uint8_t buffer[CHIP8_AUDIO_BUFFER_SIZE];
+   SDL_AudioStream     *stream;
+   bool                 is_playing;
+   uint8_t              buffer[CHIP8_AUDIO_BUFFER_SIZE];
 } Chip8_Audio;
 
 void Chip8_InitializeAudio(Chip8_Audio *audio);
