@@ -9,6 +9,7 @@
 #include "Chip8_keyboard.h"
 #include "Chip8_stack.h"
 #include "Chip8_display.h"
+#include "Chip8_audio.h"
 
 /* Instruction decoding macros */
 #define CHIP8_NIBBLE_X(x)       (((x) & 0x0f00) >> 8)
@@ -20,14 +21,15 @@
 
 typedef struct Chip8_Emulator
 {
-    Chip8_Memory      memory;
-    Chip8_Stack       stack;
-    Chip8_Registers   registers;
-    Chip8_Keyboard    keyboard;
-    Chip8_Display      display;
+    Chip8_Memory        memory;
+    Chip8_Stack         stack;
+    Chip8_Registers     registers;
+    Chip8_Keyboard      keyboard;
+    Chip8_Display       display;
+    Chip8_Audio         audio;             
 
     bool        wait_for_keypress;
-    uint8_t     keypress_register; 
+    uint8_t     keypress_register;
 } Chip8_Emulator;
 
 void        Chip8_Init(Chip8_Emulator *chip8);
