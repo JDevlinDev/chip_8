@@ -13,22 +13,22 @@ static SDL_Scancode keyboard_map[] = {
     SDL_SCANCODE_Z, SDL_SCANCODE_X, SDL_SCANCODE_C, SDL_SCANCODE_V
 };
 
-void chip8_keyboard_down(Chip8_Keyboard *keyboard, int key)
+void Chip8_KeyDown(Chip8_Keyboard *keyboard, int key)
 {
     keyboard->keys[key] = true;
 }
 
-void chip8_keyboard_up(Chip8_Keyboard *keyboard, int key)
+void Chip8_KeyUp(Chip8_Keyboard *keyboard, int key)
 {
     keyboard->keys[key] = false;
 }
 
-bool chip8_keyboard_is_down(Chip8_Keyboard *keyboard, int key)
+bool Chip8_KeyIsDown(Chip8_Keyboard *keyboard, int key)
 {
     return (keyboard->keys[key] == true);
 }
 
-uint8_t chip8_keyboard_map(SDL_Scancode key)
+uint8_t Chip8_MapKey(SDL_Scancode key)
 {
     for (int i = 0; i < CHIP8_TOTAL_KEYS; i++) {
         if (keyboard_map[i] == key) return i;

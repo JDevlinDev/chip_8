@@ -12,19 +12,19 @@ static void chip8_pixel_in_bounds(int x, int y)
     }
 }
 
-void chip8_set_pixel(Chip8_Display *display, int x, int y)
+void Chip8_SetPixel(Chip8_Display *display, int x, int y)
 {
     chip8_pixel_in_bounds(x, y);
     display->pixels[y][x] = true;
 }
 
-bool chip8_pixel_is_set(Chip8_Display *display, int x, int y)
+bool Chip8_PixelIsSet(Chip8_Display *display, int x, int y)
 {
     chip8_pixel_in_bounds(x, y);
     return display->pixels[y][x];
 }
 
-bool chip8_draw_sprite(Chip8_Display *display, int x, int y, uint8_t *sprite, int num_bytes)
+bool Chip8_DrawSprite(Chip8_Display *display, int x, int y, uint8_t *sprite, int num_bytes)
 {
     bool collision = false;
 
@@ -42,7 +42,7 @@ bool chip8_draw_sprite(Chip8_Display *display, int x, int y, uint8_t *sprite, in
     return collision;
 }
 
-void chip8_clear_screen(Chip8_Display *display)
+void Chip8_ClearDisplay(Chip8_Display *display)
 {
     memset(display, 0, CHIP8_SCREEN_HEIGHT * CHIP8_SCREEN_WIDTH);
 }

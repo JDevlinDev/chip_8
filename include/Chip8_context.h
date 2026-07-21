@@ -4,13 +4,14 @@
 #include <SDL3/SDL_video.h>
 #include <SDL3/SDL_render.h>
 
-#include <chip8.h>
+#include <Chip8_interpreter.h>
 
-typedef struct chip8_context {
+typedef struct Chip8_Context {
     // Core Emulator
-    chip8_t      emulator;
-    char         rom_filepath[256];
-    bool         is_running;
+    Chip8_Interpreter      emulator;
+    
+    char        rom_filepath[256];
+    bool        is_running;
 
     // Timing
     uint64_t     clock_rate_ns;
@@ -25,4 +26,4 @@ typedef struct chip8_context {
     // Frontend
     SDL_Window   *window;
     SDL_Renderer *renderer;
-} chip8_context_t;
+} Chip8_Context;

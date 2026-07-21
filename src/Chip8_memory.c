@@ -10,19 +10,19 @@ static void chip8_memory_in_bounds(int index)
     }
 }
 
-int chip8_memory_set(Chip8_Memory *memory, int index, uint8_t value)
+int Chip8_SetMemory(Chip8_Memory *memory, int index, uint8_t value)
 {
     chip8_memory_in_bounds(index);
     memory->memory[index] = value;
 }
 
-uint8_t chip8_memory_get(Chip8_Memory *memory, int index)
+uint8_t Chip8_GetMemory(Chip8_Memory *memory, int index)
 {
     chip8_memory_in_bounds(index);
     return memory->memory[index];
 }
 
-uint16_t chip8_memory_get_opcode(Chip8_Memory *memory, int index)
+uint16_t Chip8_GetOpcode(Chip8_Memory *memory, int index)
 {
-    return (chip8_memory_get(memory, index) << 8) | chip8_memory_get(memory, index + 1);
+    return (Chip8_GetMemory(memory, index) << 8) | Chip8_GetMemory(memory, index + 1);
 }

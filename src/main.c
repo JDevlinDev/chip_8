@@ -40,7 +40,7 @@ SDL_AppResult SDL_AppInit(void **appstate, int argc, char *argv[])
             CHIP8_SCREEN_HEIGHT,
             SDL_LOGICAL_PRESENTATION_LETTERBOX);
 
-    chip8_init(&c8_emulator);
+    Chip8_Init(&c8_emulator);
 
     char *filename;
     if (argc > 1) {
@@ -50,7 +50,7 @@ SDL_AppResult SDL_AppInit(void **appstate, int argc, char *argv[])
         printf("File was not provided\n");
         exit(EXIT_FAILURE);
     }
-    size_t fsize = chip8_load(&c8_emulator, filename);
+    size_t fsize = Chip8_Load(&c8_emulator, filename);
 
     if (fsize == 0) {
         fprintf(stderr, "Failed to load file\n");
@@ -68,19 +68,19 @@ SDL_AppResult SDL_AppEvent(void *appstate, SDL_Event *event)
         case SDL_EVENT_QUIT:
             return SDL_APP_SUCCESS;
         case SDL_EVENT_KEY_DOWN:
-            key_toggled = chip8_keyboard_map(event->key.scancode);
+            key_toggled = Chip8_MapKey(event->key.scancode);
             if (key_toggled != -1) {
                 if (c8_emulator.wait_for_keypress) {
                     c8_emulator.registers.V[c8_emulator.keypress_register] = key_toggled;
                     c8_emulator.wait_for_keypress = false;
                 }
-                chip8_keyboard_down(&c8_emulator.keyboard, key_toggled);
+                Chip8_KeyDown(&c8_emulator.keyboard, key_toggled);
             }
             break;
         case SDL_EVENT_KEY_UP:
-            key_toggled = chip8_keyboard_map(event->key.scancode);
+            key_toggled = Chip8_MapKey(event->key.scancode);
             if (key_toggled != -1) {
-                chip8_keyboard_up(&c8_emulator.keyboard, key_toggled);
+                Chip8_KeyUp(&c8_emulator.keyboard, key_toggled);
             }
             break;
     }
@@ -100,7 +100,7 @@ SDL_AppResult SDL_AppIterate(void *appstate)
     /* TODO: Extract this loop to C8_DrawScreen() */
     for (int x = 0; x < CHIP8_SCREEN_WIDTH; x++) {
         for (int y = 0; y < CHIP8_SCREEN_HEIGHT; y++) {
-            if (chip8_pixel_is_set(&c8_emulator.screen, x, y)) {
+            if (Chip8_PixelIsSet(&c8_emulator.screen, x, y)) {
                 SDL_FRect pixel;
                 pixel.x = x;
                 pixel.y = y;
@@ -126,8 +126,8 @@ SDL_AppResult SDL_AppIterate(void *appstate)
 
     while (time_accumulator >= CHIP8_CLOCK_RATE_NS) {
         if (!c8_emulator.wait_for_keypress) {
-            uint16_t next_instruction = chip8_fetch(&c8_emulator);
-            chip8_exec(&c8_emulator, next_instruction);
+            uint16_t next_instruction = Chip8_Fetch(&c8_emulator);
+            Chip8_Execute(&c8_emulator, next_instruction);
             time_accumulator -= CHIP8_CLOCK_RATE_NS;
         }
     }
@@ -146,7 +146,7 @@ SDL_AppResult SDL_AppIterate(void *appstate)
     //     frame_counter++;
     //     if (frame_counter >= 20) {
     //         seconds_elapsed++;
-    //         uint16_t opcode = chip8_fetch(&c8_emulator);
+    //         uint16_t opcode = Chip8_Fetch(&c8_emulator);
     //         printf("Next opcode: 0x%x\n", opcode);
     //         frame_counter = 0;
     //     }

@@ -18,20 +18,20 @@
 #define CHIP8_NIBBLE_NNN(x)     ((x) & 0x0fff)
 
 
-typedef struct chip8
+typedef struct Chip8_Interpreter
 {
     Chip8_Memory      memory;
     Chip8_Stack       stack;
     Chip8_Registers   registers;
     Chip8_Keyboard    keyboard;
-    Chip8_display      screen;
+    Chip8_Display      screen;
 
     bool        wait_for_keypress;
     uint8_t     keypress_register; 
 } Chip8_Interpreter;
 
-void        chip8_init(Chip8_Interpreter *chip8);
-uint16_t    chip8_fetch(Chip8_Interpreter *chip8);
-void        chip8_exec(Chip8_Interpreter *chip8, uint16_t opcode);
+void        Chip8_Init(Chip8_Interpreter *chip8);
+uint16_t    Chip8_Fetch(Chip8_Interpreter *chip8);
+void        Chip8_Execute(Chip8_Interpreter *chip8, uint16_t opcode);
 
-size_t      chip8_load(Chip8_Interpreter *chip8, char *fname);
+size_t      Chip8_Load(Chip8_Interpreter *chip8, char *fname);

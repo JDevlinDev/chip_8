@@ -70,7 +70,7 @@ static void chip8_decode_exec(Chip8_Interpreter *chip8, uint16_t opcode)
 
     /* CALL addr: Call subroutine at nnn. */
     case 0x2000:
-        chip8_stack_push(chip8, chip8->registers.PC);
+        Chip8_Push(chip8, chip8->registers.PC);
         chip8->registers.PC = nnn;
     break;
 
@@ -185,7 +185,7 @@ static void chip8_decode_exec(Chip8_Interpreter *chip8, uint16_t opcode)
 
     /* DRW V[x], V[y], nibble: Display n-byte sprite starting at memory location I at (V[x], V[y]), set VF = collision */
     case 0xd000:
-        chip8_draw_sprite(
+        Chip8_DrawSprite(
             &chip8->screen,
             chip8->registers.V[x],
             chip8->registers.V[y],
@@ -198,13 +198,13 @@ static void chip8_decode_exec(Chip8_Interpreter *chip8, uint16_t opcode)
 
         /* SKP V[x]: Skip next instruction if key with the value of V[x] is pressed */
         case 0x9e:
-            if (chip8_keyboard_is_down(&chip8->keyboard, chip8->registers.V[x]))
+            if (Chip8_KeyIsDown(&chip8->keyboard, chip8->registers.V[x]))
                 chip8->registers.PC += 2;
          break;
 
         /* SKNP V[x]: Skip next instruction if key with the value of V[x] is not pressed */
         case 0xa1:
-            if (!chip8_keyboard_is_down(&chip8->keyboard, chip8->registers.V[x]))
+            if (!Chip8_KeyIsDown(&chip8->keyboard, chip8->registers.V[x]))
                 chip8->registers.PC += 2;
         break;
         }
@@ -260,13 +260,13 @@ static void chip8_decode_exec(Chip8_Interpreter *chip8, uint16_t opcode)
     }
 }
 
-void chip8_init(Chip8_Interpreter *chip8)
+void Chip8_Init(Chip8_Interpreter *chip8)
 {
-    memset(chip8, 0, sizeof(chip8_t));
+    memset(chip8, 0, sizeof(Chip8_Interpreter));
     memcpy(&chip8->memory.memory, chip8_default_character_set, sizeof(chip8_default_character_set));
 }
 
-size_t chip8_load(Chip8_Interpreter *chip8, char *fname)
+size_t Chip8_Load(Chip8_Interpreter *chip8, char *fname)
 {
     errno = 0;
     FILE *f = fopen(fname, "r");
@@ -294,26 +294,26 @@ size_t chip8_load(Chip8_Interpreter *chip8, char *fname)
     return fsize;
 }
 
-uint16_t chip8_fetch(Chip8_Interpreter *chip8)
+uint16_t Chip8_Fetch(Chip8_Interpreter *chip8)
 {
-    uint16_t opcode = chip8_memory_get_opcode(&chip8->memory, chip8->registers.PC);
+    uint16_t opcode = Chip8_GetOpcode(&chip8->memory, chip8->registers.PC);
     chip8->registers.PC += 2;
     return opcode;
 }
 
-void chip8_exec(Chip8_Interpreter *chip8, uint16_t opcode)
+void Chip8_Execute(Chip8_Interpreter *chip8, uint16_t opcode)
 {
     switch (opcode)
     {
 
     /* CLS: Clear the screen */
     case 0x00E0:
-        chip8_clear_screen(&chip8->screen);
+        Chip8_ClearDisplay(&chip8->screen);
         break;
 
     /* RET: Return from a subroutine */
     case 0x00EE:
-        chip8->registers.PC = chip8_stack_pop(chip8);
+        chip8->registers.PC = Chip8_Pop(chip8);
         break;
     default:
         chip8_decode_exec(chip8, opcode);
