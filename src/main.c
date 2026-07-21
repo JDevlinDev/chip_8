@@ -67,6 +67,7 @@ SDL_AppResult SDL_AppEvent(void *appstate, SDL_Event *event)
     switch (event->type) {
         case SDL_EVENT_QUIT:
             return SDL_APP_SUCCESS;
+            
         case SDL_EVENT_KEY_DOWN:
             key_toggled = Chip8_MapKey(event->key.scancode);
             if (key_toggled != -1) {
@@ -77,6 +78,7 @@ SDL_AppResult SDL_AppEvent(void *appstate, SDL_Event *event)
                 Chip8_KeyDown(&emulator.keyboard, key_toggled);
             }
             break;
+        
         case SDL_EVENT_KEY_UP:
             key_toggled = Chip8_MapKey(event->key.scancode);
             if (key_toggled != -1) {
