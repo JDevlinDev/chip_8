@@ -9,9 +9,9 @@
 void Chip8_InitializeAudio(Chip8_Audio *audio)
 {
    SDL_AudioSpec spec = {
-    .format = SDL_AUDIO_U8,
-    .channels = 1,
-    .freq = 44100
+      .format = SDL_AUDIO_U8,
+      .channels = 1,
+      .freq = CHIP8_AUDIO_SAMPLE_RATE
    };
 
    audio->stream = SDL_OpenAudioDeviceStream(SDL_AUDIO_DEVICE_DEFAULT_PLAYBACK, &spec, NULL, NULL);
