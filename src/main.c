@@ -103,7 +103,7 @@ SDL_AppResult SDL_AppIterate(void *appstate)
 
     static uint64_t last_time = 0;
     if (last_time == 0)
-        last_time = SDL_GetTicksNS(); // SDL_GetTicksNS() returns nanoseconds
+        last_time = SDL_GetTicksNS();
     
     uint64_t current_time = SDL_GetTicksNS();
     uint64_t time_delta = current_time - last_time;
