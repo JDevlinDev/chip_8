@@ -186,7 +186,7 @@ static void chip8_decode_exec(Chip8_Emulator *chip8, uint16_t opcode)
     /* DRW V[x], V[y], nibble: Display n-byte sprite starting at memory location I at (V[x], V[y]), set VF = collision */
     case 0xd000:
         Chip8_DrawSprite(
-            &chip8->screen,
+            &chip8->display,
             chip8->registers.V[x],
             chip8->registers.V[y],
             &chip8->memory.memory[chip8->registers.I],
@@ -306,9 +306,9 @@ void Chip8_Execute(Chip8_Emulator *chip8, uint16_t opcode)
     switch (opcode)
     {
 
-    /* CLS: Clear the screen */
+    /* CLS: Clear the display */
     case 0x00E0:
-        Chip8_ClearDisplay(&chip8->screen);
+        Chip8_ClearDisplay(&chip8->display);
         break;
 
     /* RET: Return from a subroutine */

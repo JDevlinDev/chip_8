@@ -1,6 +1,7 @@
 #pragma once
 
 #include <stdint.h>
+#include <SDL3/SDL_render.h>
 
 #include "Chip8_config.h"
 
@@ -18,4 +19,4 @@ bool Chip8_DrawSprite(Chip8_Display *display, int x, int y, uint8_t *sprite, int
 
 void Chip8_ClearDisplay(Chip8_Display *display);
 
-void Chip8_Draw(Chip8_Display *display);
+void Chip8_RenderDisplay(Chip8_Display *display, SDL_Renderer *renderer);

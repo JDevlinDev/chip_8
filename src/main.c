@@ -67,7 +67,7 @@ SDL_AppResult SDL_AppEvent(void *appstate, SDL_Event *event)
     switch (event->type) {
         case SDL_EVENT_QUIT:
             return SDL_APP_SUCCESS;
-            
+
         case SDL_EVENT_KEY_DOWN:
             key_toggled = Chip8_MapKey(event->key.scancode);
             if (key_toggled != -1) {
@@ -94,36 +94,22 @@ SDL_AppResult SDL_AppIterate(void *appstate)
 {
     
     SDL_SetRenderDrawColor(renderer, 10, 10, 10, SDL_ALPHA_OPAQUE);
-    
     SDL_RenderClear(renderer);
 
     SDL_SetRenderDrawColor(renderer, 250, 250, 250, SDL_ALPHA_OPAQUE);
-   
-    /* TODO: Extract this loop to C8_DrawScreen() */
-    for (int x = 0; x < CHIP8_SCREEN_WIDTH; x++) {
-        for (int y = 0; y < CHIP8_SCREEN_HEIGHT; y++) {
-            if (Chip8_PixelIsSet(&emulator.screen, x, y)) {
-                SDL_FRect pixel;
-                pixel.x = x;
-                pixel.y = y;
-                pixel.w = 1;
-                pixel.h = 1;
-                SDL_RenderFillRect(renderer, &pixel);
-            }
-        }
-    }
+    Chip8_RenderDisplay(&emulator.display, renderer);
+
     SDL_RenderPresent(renderer);
 
     static uint64_t last_time = 0;
-    static uint64_t time_accumulator = 0;
-
     if (last_time == 0)
         last_time = SDL_GetTicksNS(); // SDL_GetTicksNS() returns nanoseconds
-
+    
     uint64_t current_time = SDL_GetTicksNS();
     uint64_t time_delta = current_time - last_time;
     last_time = current_time;
-
+    
+    static uint64_t time_accumulator = 0;
     time_accumulator += time_delta;
 
     while (time_accumulator >= CHIP8_CLOCK_RATE_NS) {

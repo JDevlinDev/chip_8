@@ -1,6 +1,9 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <memory.h>
+#include <SDL3/SDL_render.h>
+#include <SDL3/SDL_rect.h>
+
 
 #include "Chip8_display.h"
 
@@ -45,4 +48,20 @@ bool Chip8_DrawSprite(Chip8_Display *display, int x, int y, uint8_t *sprite, int
 void Chip8_ClearDisplay(Chip8_Display *display)
 {
     memset(display, 0, CHIP8_SCREEN_HEIGHT * CHIP8_SCREEN_WIDTH);
+}
+
+void Chip8_RenderDisplay(Chip8_Display *display, SDL_Renderer *renderer)
+{
+    for (int x = 0; x < CHIP8_SCREEN_WIDTH; x++) {
+        for (int y = 0; y < CHIP8_SCREEN_HEIGHT; y++) {
+            if (Chip8_PixelIsSet(display, x, y)) {
+                SDL_FRect pixel;
+                pixel.x = x;
+                pixel.y = y;
+                pixel.w = 1;
+                pixel.h = 1;
+                SDL_RenderFillRect(renderer, &pixel);
+            }
+        }
+    }
 }

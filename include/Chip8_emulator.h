@@ -24,7 +24,7 @@ typedef struct Chip8_Emulator
     Chip8_Stack       stack;
     Chip8_Registers   registers;
     Chip8_Keyboard    keyboard;
-    Chip8_Display      screen;
+    Chip8_Display      display;
 
     bool        wait_for_keypress;
     uint8_t     keypress_register; 
