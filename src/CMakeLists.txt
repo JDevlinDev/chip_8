@@ -8,7 +8,7 @@ target_sources(Chip8
       Chip8_display.c
       Chip8_keyboard.c
       Chip8_context.c
-      Chip8_timers.c
+      Chip8_time.c
       Chip8_audio.c
 )
 
