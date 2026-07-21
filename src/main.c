@@ -101,6 +101,7 @@ SDL_AppResult SDL_AppIterate(void *appstate)
 
     SDL_RenderPresent(renderer);
 
+    /* Begin extract to Chip8_timers.h */
     static uint64_t last_time = 0;
     if (last_time == 0)
         last_time = SDL_GetTicksNS();
@@ -112,6 +113,7 @@ SDL_AppResult SDL_AppIterate(void *appstate)
     static uint64_t time_accumulator = 0;
     time_accumulator += time_delta;
 
+
     while (time_accumulator >= CHIP8_CLOCK_RATE_NS) {
         if (!emulator.wait_for_keypress) {
             uint16_t next_instruction = Chip8_Fetch(&emulator);
@@ -120,19 +122,20 @@ SDL_AppResult SDL_AppIterate(void *appstate)
         }
     }
     
-    // while (timer_accumulator >= CHIP8_TIMER_RATE) {
-    //    if (emulator.registers.DT > 0) {
-    //        emulator.registers.DT--;
-    //    }
+    while (time_accumulator >= CHIP8_TIMER_RATE_NS) {
+       if (emulator.registers.DT > 0) {
+           emulator.registers.DT--;
+       }
+    // 
+       if (emulator.registers.ST > 0) {
+           emulator.registers.ST--;
+       }
+    // 
+       time_accumulator -= CHIP8_TIMER_RATE_NS;
+     
+    }
+    /* End extract */
     
-    //    if (emulator.registers.ST > 0) {
-    //        emulator.registers.ST--;
-    //    }
-    
-    //    timer_accumulator -= CHIP8_TIMER_RATE;
-    //  
-    // }
-
     return SDL_APP_CONTINUE;
 }
 
