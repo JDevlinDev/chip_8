@@ -121,23 +121,16 @@ SDL_AppResult SDL_AppIterate(void *appstate)
     }
     
     // while (timer_accumulator >= CHIP8_TIMER_RATE) {
-    //     if (emulator.registers.DT > 0) {
-    //         emulator.registers.DT--;
-    //     }
-        
-    //     if (emulator.registers.ST > 0) {
-    //         emulator.registers.ST--;
-    //     }
-        
-    //     timer_accumulator -= CHIP8_TIMER_RATE;
-        
-    //     frame_counter++;
-    //     if (frame_counter >= 20) {
-    //         seconds_elapsed++;
-    //         uint16_t opcode = Chip8_Fetch(&emulator);
-    //         printf("Next opcode: 0x%x\n", opcode);
-    //         frame_counter = 0;
-    //     }
+    //    if (emulator.registers.DT > 0) {
+    //        emulator.registers.DT--;
+    //    }
+    
+    //    if (emulator.registers.ST > 0) {
+    //        emulator.registers.ST--;
+    //    }
+    
+    //    timer_accumulator -= CHIP8_TIMER_RATE;
+    //  
     // }
 
     return SDL_APP_CONTINUE;
