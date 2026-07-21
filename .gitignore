@@ -3,7 +3,6 @@ dist
 build
 
 # Third-party libraries
-vendor/SDL
 games
 
 # VS Code and project related files
