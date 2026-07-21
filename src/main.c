@@ -8,13 +8,13 @@
 #include <SDL3/SDL.h>
 #include <SDL3/SDL_main.h>
 
-#include "chip8.h"
-#include "chip8_screen.h"
-#include "chip8_keyboard.h"
+#include "Chip8_interpreter.h"
+#include "Chip8_display.h"
+#include "Chip8_keyboard.h"
 
 static SDL_Window *window = NULL;
 static SDL_Renderer *renderer = NULL;
-static chip8_t c8_emulator;
+static Chip8_Interpreter c8_emulator;
 
 SDL_AppResult SDL_AppInit(void **appstate, int argc, char *argv[])
 {

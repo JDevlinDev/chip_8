@@ -2,7 +2,7 @@
 #include <stdio.h>
 #include <memory.h>
 
-#include "chip8_screen.h"
+#include "Chip8_display.h"
 
 static void chip8_pixel_in_bounds(int x, int y)
 {
@@ -12,19 +12,19 @@ static void chip8_pixel_in_bounds(int x, int y)
     }
 }
 
-void chip8_set_pixel(chip8_screen_t *screen, int x, int y)
+void chip8_set_pixel(Chip8_Display *display, int x, int y)
 {
     chip8_pixel_in_bounds(x, y);
-    screen->pixels[y][x] = true;
+    display->pixels[y][x] = true;
 }
 
-bool chip8_pixel_is_set(chip8_screen_t *screen, int x, int y)
+bool chip8_pixel_is_set(Chip8_Display *display, int x, int y)
 {
     chip8_pixel_in_bounds(x, y);
-    return screen->pixels[y][x];
+    return display->pixels[y][x];
 }
 
-bool chip8_draw_sprite(chip8_screen_t *screen, int x, int y, uint8_t *sprite, int num_bytes)
+bool chip8_draw_sprite(Chip8_Display *display, int x, int y, uint8_t *sprite, int num_bytes)
 {
     bool collision = false;
 
@@ -34,15 +34,15 @@ bool chip8_draw_sprite(chip8_screen_t *screen, int x, int y, uint8_t *sprite, in
             if((next_byte & (0b10000000 >> lx)) == 0)
                 continue;
 
-            if (screen->pixels[(ly + y) % CHIP8_SCREEN_HEIGHT][(lx + x) % CHIP8_SCREEN_WIDTH])
+            if (display->pixels[(ly + y) % CHIP8_SCREEN_HEIGHT][(lx + x) % CHIP8_SCREEN_WIDTH])
                 collision = true;
-            screen->pixels[(ly + y) % CHIP8_SCREEN_HEIGHT][(lx + x) % CHIP8_SCREEN_WIDTH] ^=  true;
+            display->pixels[(ly + y) % CHIP8_SCREEN_HEIGHT][(lx + x) % CHIP8_SCREEN_WIDTH] ^=  true;
         }
     }
     return collision;
 }
 
-void chip8_clear_screen(chip8_screen_t *screen)
+void chip8_clear_screen(Chip8_Display *display)
 {
-    memset(screen, 0, CHIP8_SCREEN_HEIGHT * CHIP8_SCREEN_WIDTH);
+    memset(display, 0, CHIP8_SCREEN_HEIGHT * CHIP8_SCREEN_WIDTH);
 }

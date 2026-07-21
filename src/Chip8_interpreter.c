@@ -9,7 +9,7 @@
 #include <SDL3/SDL_events.h>
 #include <SDL3/SDL_scancode.h>
 
-#include "chip8.h"
+#include "Chip8_interpreter.h"
 
 static const uint8_t chip8_default_character_set[] = {
     0xF0, 0x90, 0x90, 0x90, 0xF0, // 0
@@ -30,7 +30,7 @@ static const uint8_t chip8_default_character_set[] = {
     0xF0, 0x80, 0xF0, 0x80, 0x80  // F
 };
 
-static void chip8_pmem(chip8_t *chip8, const uint8_t *buf, size_t size)
+static void chip8_pmem(Chip8_Interpreter *chip8, const uint8_t *buf, size_t size)
 {
     if ((size + CHIP8_PROGRAM_LOAD_ADDRESS) >= CHIP8_MEMORY_SIZE)
     {
@@ -41,7 +41,7 @@ static void chip8_pmem(chip8_t *chip8, const uint8_t *buf, size_t size)
     chip8->registers.PC = CHIP8_PROGRAM_LOAD_ADDRESS;
 }
 
-static void chip8_load_bcd(chip8_t *chip8, uint8_t val)
+static void chip8_load_bcd(Chip8_Interpreter *chip8, uint8_t val)
 {
     // Hundreds digit: divide by 100
     chip8->memory.memory[chip8->registers.I] = val / 100;
@@ -53,7 +53,7 @@ static void chip8_load_bcd(chip8_t *chip8, uint8_t val)
     chip8->memory.memory[chip8->registers.I + 2] = val % 10;
 }
 
-static void chip8_decode_exec(chip8_t *chip8, uint16_t opcode)
+static void chip8_decode_exec(Chip8_Interpreter *chip8, uint16_t opcode)
 {
     uint8_t x = CHIP8_NIBBLE_X(opcode);
     uint8_t y = CHIP8_NIBBLE_Y(opcode);
@@ -260,13 +260,13 @@ static void chip8_decode_exec(chip8_t *chip8, uint16_t opcode)
     }
 }
 
-void chip8_init(chip8_t *chip8)
+void chip8_init(Chip8_Interpreter *chip8)
 {
     memset(chip8, 0, sizeof(chip8_t));
     memcpy(&chip8->memory.memory, chip8_default_character_set, sizeof(chip8_default_character_set));
 }
 
-size_t chip8_load(chip8_t *chip8, char *fname)
+size_t chip8_load(Chip8_Interpreter *chip8, char *fname)
 {
     errno = 0;
     FILE *f = fopen(fname, "r");
@@ -294,14 +294,14 @@ size_t chip8_load(chip8_t *chip8, char *fname)
     return fsize;
 }
 
-uint16_t chip8_fetch(chip8_t *chip8)
+uint16_t chip8_fetch(Chip8_Interpreter *chip8)
 {
     uint16_t opcode = chip8_memory_get_opcode(&chip8->memory, chip8->registers.PC);
     chip8->registers.PC += 2;
     return opcode;
 }
 
-void chip8_exec(chip8_t *chip8, uint16_t opcode)
+void chip8_exec(Chip8_Interpreter *chip8, uint16_t opcode)
 {
     switch (opcode)
     {

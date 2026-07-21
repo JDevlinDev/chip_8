@@ -3,8 +3,8 @@
 
 #include <SDL3/SDL_scancode.h>
 
-#include "chip8_keyboard.h"
-#include "chip8_config.h"
+#include "Chip8_keyboard.h"
+#include "Chip8_config.h"
 
 static SDL_Scancode keyboard_map[] = {
     SDL_SCANCODE_1, SDL_SCANCODE_2, SDL_SCANCODE_3, SDL_SCANCODE_4,
@@ -13,17 +13,17 @@ static SDL_Scancode keyboard_map[] = {
     SDL_SCANCODE_Z, SDL_SCANCODE_X, SDL_SCANCODE_C, SDL_SCANCODE_V
 };
 
-void chip8_keyboard_down(chip8_keyboard_t *keyboard, int key)
+void chip8_keyboard_down(Chip8_Keyboard *keyboard, int key)
 {
     keyboard->keys[key] = true;
 }
 
-void chip8_keyboard_up(chip8_keyboard_t *keyboard, int key)
+void chip8_keyboard_up(Chip8_Keyboard *keyboard, int key)
 {
     keyboard->keys[key] = false;
 }
 
-bool chip8_keyboard_is_down(chip8_keyboard_t *keyboard, int key)
+bool chip8_keyboard_is_down(Chip8_Keyboard *keyboard, int key)
 {
     return (keyboard->keys[key] == true);
 }

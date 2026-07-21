@@ -2,12 +2,12 @@ add_executable(Chip8 main.c)
 
 target_sources(Chip8
    PRIVATE
-      chip8.c
-      chip8_stack.c
-      chip8_memory.c
-      chip8_screen.c
-      chip8_keyboard.c
-      chip8_context.c
+      Chip8_interpreter.c
+      Chip8_stack.c
+      Chip8_memory.c
+      Chip8_display.c
+      Chip8_keyboard.c
+      Chip8_context.c
 )
 
 target_include_directories(Chip8
