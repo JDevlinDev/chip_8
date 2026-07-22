@@ -1,5 +1,6 @@
 #include <stdint.h>
 #include <stdbool.h>
+#include <stdio.h>
 
 #include <SDL3/SDL_video.h>
 #include <SDL3/SDL_render.h>
@@ -19,9 +20,10 @@ typedef struct Chip8_Context {
 //    uint8_t   key_register;
 
    // // Statistics
-   // uint64_t     instructions_executed;
-   // uint64_t     frames_rendered;
-   // float        current_fps;
+   uint64_t    instructions_executed;
+   uint64_t    cycle_count;
+   bool        logging_enabled;
+   FILE       *log_file;
 
    // Frontend
    SDL_Window     *window;

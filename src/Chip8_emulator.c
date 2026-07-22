@@ -30,7 +30,7 @@ static const uint8_t chip8_default_character_set[] = {
     0xF0, 0x80, 0xF0, 0x80, 0x80  // F
 };
 
-static SDL_Scancode Chip8_WaitForKeyPress(Chip8_Emulator *chip8)
+static int Chip8_WaitForKeyPress(Chip8_Emulator *chip8)
 {
     SDL_Event event;
 
@@ -230,8 +230,8 @@ static void Chip8_DecodeExecute(Chip8_Emulator *chip8, uint16_t opcode)
 
         /* Fx0A - LD V[x], K: Wait for a key press, store the value of the key in V[x] */
         case 0x0a:
-            chip8->wait = true;
-            chip8->keypress_register = x;
+            int key = Chip8_WaitForKeyPress(chip8);
+            chip8->registers.V[x] = key;
             break;
         
         /* Fx15 - LD DT, V[x]: Set delay timer = V[x] */
@@ -262,14 +262,14 @@ static void Chip8_DecodeExecute(Chip8_Emulator *chip8, uint16_t opcode)
         /* Fx55 - LD [I], V[x]: Store registers V[0] through V[x] in memory starting at location I */
         case 0x55:
             for (int i = 0; i <= x; i++) {
-                chip8->memory.memory[chip8->registers.I + i] = chip8->registers.V[i];
+                Chip8_SetMemory(&chip8->memory, chip8->registers.I + i, chip8->registers.V[i]);
             }
             break;
         
         /* Fx65 - LD Vx, [I]: Read registers V[0] through V[x] from memory starting at location I */
         case 0x65:
             for (int i = 0; i <= x; i++) {
-                chip8->registers.V[i] = chip8->memory.memory[chip8->registers.I + i];
+                chip8->registers.V[i] = Chip8_GetMemory(&chip8->memory, chip8->registers.I + i);
             }
             break;
         }

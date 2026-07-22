@@ -1,12 +1,28 @@
+#include <time.h>
+#include <errno.h>
+
 #include <SDL3/SDL_render.h>
 #include <SDL3/SDL_init.h>
 #include <SDL3/SDL_timer.h>
 #include <SDL3/SDL_log.h>
+#include <SDL3/SDL_time.h>
 
 #include "Chip8_context.h"
 #include "Chip8_emulator.h"
 #include "Chip8_audio.h"
 #include "Chip8_config.h"
+
+static void Chip8_InitializeLog(Chip8_Context *ctx)
+{
+   SDL_Time ticks;
+   SDL_DateTime tm;
+   char *fname = NULL;
+   if (SDL_GetCurrentTime(&ticks)) {
+      
+   }
+
+   errno = 0;
+}
 
 bool Chip8_InitializeContext(Chip8_Context *ctx)
 {
