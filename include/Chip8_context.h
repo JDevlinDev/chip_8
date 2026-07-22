@@ -9,26 +9,20 @@
 #include <Chip8_audio.h>
 #include <Chip8_time.h>
 
-typedef struct Chip8_Context {
-    // Core Emulator
+typedef struct Chip8_EmulatorState {
    Chip8_Emulator    emulator;
    Chip8_Time        time;
 
    char     rom_filepath[256];
    bool     is_running;
-   bool     wait;
-//    uint8_t   key_register;
 
-   // // Statistics
    uint64_t    instructions_executed;
    uint64_t    cycle_count;
    bool        logging_enabled;
-   FILE       *log_file;
 
-   // Frontend
    SDL_Window     *window;
    SDL_Renderer   *renderer;
-} Chip8_Context;
+} Chip8_EmulatorState;
 
-bool    Chip8_InitializeContext(Chip8_Context *ctx);
-void    Chip8_UpdateContext(Chip8_Context *ctx);
+bool    Chip8_InitEmulator(Chip8_EmulatorState *es);
+void    Chip8_UpdateContext(Chip8_EmulatorState *es);
