@@ -12,7 +12,7 @@ bool Chip8_InitializeContext(Chip8_Context *ctx)
 {
    SDL_SetAppMetadata("Chip8 Renderer", "1.0", "com.jdevs.chip8");
 
-    if (!SDL_Init(SDL_INIT_VIDEO)) {
+    if (!SDL_Init(SDL_INIT_VIDEO | SDL_INIT_AUDIO)) {
         SDL_Log("Couldn't initialize SDL: %s", SDL_GetError());
         return SDL_APP_FAILURE;
     }
