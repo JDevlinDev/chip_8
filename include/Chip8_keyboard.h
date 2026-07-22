@@ -17,4 +17,4 @@ void Chip8_KeyUp(Chip8_Keyboard *keyboard, int key);
 
 bool Chip8_KeyIsDown(Chip8_Keyboard *keyboard, int key);
 
-uint8_t Chip8_MapKey(SDL_Scancode key);
+int Chip8_MapKey(SDL_Scancode key);
