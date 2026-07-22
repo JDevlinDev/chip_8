@@ -48,9 +48,9 @@ SDL_AppResult SDL_AppEvent(void *appstate, SDL_Event *event)
         case SDL_EVENT_KEY_DOWN:
             key_toggled = Chip8_MapKey(event->key.scancode);
             if (key_toggled != -1) {
-                if (context.wait) {
+                if (context.emulator.wait) {
                     context.emulator.registers.V[context.emulator.keypress_register] = key_toggled;
-                    context.wait = false;
+                    context.emulator.wait = false;
                 }
                 Chip8_KeyDown(&context.emulator.keyboard, key_toggled);
             }
