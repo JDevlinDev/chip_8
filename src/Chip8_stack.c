@@ -10,7 +10,7 @@ void Chip8_Push(Chip8_Emulator *chip8, uint16_t val) {
         fprintf(stderr, "CHIP8 FATAL ERROR: Stack overflow!\n");
         exit(EXIT_FAILURE);
     }
-    chip8->stack.stack[chip8->registers.SP];
+    chip8->stack.stack[chip8->registers.SP] = val;
     chip8->registers.SP++;
 }
 
