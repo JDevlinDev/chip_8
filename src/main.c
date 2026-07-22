@@ -13,11 +13,11 @@
 #include "Chip8_keyboard.h"
 #include "Chip8_context.h"
 
-static Chip8_Context context;
+static Chip8_EmulatorState context;
 
 SDL_AppResult SDL_AppInit(void **appstate, int argc, char *argv[])
 {
-    Chip8_InitializeContext(&context);
+    Chip8_InitEmulator(&context);
 
     char *filename;
     if (argc > 1) {
@@ -39,24 +39,23 @@ SDL_AppResult SDL_AppInit(void **appstate, int argc, char *argv[])
 
 SDL_AppResult SDL_AppEvent(void *appstate, SDL_Event *event)
 {
-    int key_toggled;
+    int key;
 
     switch (event->type) {
         case SDL_EVENT_QUIT:
             return SDL_APP_SUCCESS;
 
         case SDL_EVENT_KEY_DOWN:
-            key_toggled = Chip8_MapKey(event->key.scancode);
-            if (key_toggled != -1) {
-                context.emulator.registers.V[context.emulator.keypress_register] = key_toggled;
-                Chip8_KeyDown(&context.emulator.keyboard, key_toggled);
+            key = Chip8_MapKey(event->key.scancode);
+            if (key != -1) {
+                Chip8_KeyDown(&context.emulator.keyboard, key);
             }
             break;
         
         case SDL_EVENT_KEY_UP:
-            key_toggled = Chip8_MapKey(event->key.scancode);
-            if (key_toggled != -1) {
-                Chip8_KeyUp(&context.emulator.keyboard, key_toggled);
+            key = Chip8_MapKey(event->key.scancode);
+            if (key != -1) {
+                Chip8_KeyUp(&context.emulator.keyboard, key);
             }
             break;
     }
