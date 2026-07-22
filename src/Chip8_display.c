@@ -4,7 +4,6 @@
 #include <SDL3/SDL_render.h>
 #include <SDL3/SDL_rect.h>
 
-
 #include "Chip8_display.h"
 
 static void chip8_pixel_in_bounds(int x, int y)
