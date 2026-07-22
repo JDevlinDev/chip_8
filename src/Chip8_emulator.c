@@ -30,6 +30,20 @@ static const uint8_t chip8_default_character_set[] = {
     0xF0, 0x80, 0xF0, 0x80, 0x80  // F
 };
 
+static SDL_Scancode Chip8_WaitForKeyPress(Chip8_Emulator *chip8)
+{
+    SDL_Event event;
+
+    while (SDL_WaitEvent(&event)) {
+        if (event.type != SDL_EVENT_KEY_DOWN)
+            continue;
+
+        int key = Chip8_MapKey(event.key.scancode);
+        if (key != -1)
+            return key;
+    }
+}
+
 static void Chip8_PopulateMemory(Chip8_Emulator *chip8, const uint8_t *buf, size_t size)
 {
     if ((size + CHIP8_PROGRAM_LOAD_ADDRESS) >= CHIP8_MEMORY_SIZE)
@@ -185,8 +199,7 @@ static void Chip8_DecodeExecute(Chip8_Emulator *chip8, uint16_t opcode)
             &chip8->display,
             chip8->registers.V[x],
             chip8->registers.V[y],
-            &chip8->memory.memory[chip8->registers.I],
-            n);
+            &chip8->memory.memory[chip8->registers.I], n);
     break;
 
     case 0xe000:
