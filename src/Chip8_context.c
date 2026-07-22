@@ -12,19 +12,7 @@
 #include "Chip8_audio.h"
 #include "Chip8_config.h"
 
-static void Chip8_InitializeLog(Chip8_Context *ctx)
-{
-   SDL_Time ticks;
-   SDL_DateTime tm;
-   char *fname = NULL;
-   if (SDL_GetCurrentTime(&ticks)) {
-      
-   }
-
-   errno = 0;
-}
-
-bool Chip8_InitializeContext(Chip8_Context *ctx)
+bool Chip8_InitEmulator(Chip8_EmulatorState *ctx)
 {
    SDL_SetAppMetadata("Chip8 Renderer", "1.0", "com.jdevs.chip8");
 
@@ -56,7 +44,7 @@ bool Chip8_InitializeContext(Chip8_Context *ctx)
    ctx->is_running = false;
 }
 
-void Chip8_UpdateContext(Chip8_Context *ctx)
+void Chip8_UpdateContext(Chip8_EmulatorState *ctx)
 {
    if (ctx->time.last == 0) {
         ctx->time.last = SDL_GetTicksNS();
@@ -71,10 +59,8 @@ void Chip8_UpdateContext(Chip8_Context *ctx)
 
    // Handle CPU instruction cycles
    while (ctx->time.i_accumulator >= CHIP8_CLOCK_RATE_NS) {
-      if (!ctx->wait) {
-          uint16_t next_instruction = Chip8_Fetch(&ctx->emulator);
-          Chip8_Execute(&ctx->emulator, next_instruction);
-      }
+      uint16_t next_instruction = Chip8_Fetch(&ctx->emulator);
+      Chip8_Execute(&ctx->emulator, next_instruction);
       ctx->time.i_accumulator -= CHIP8_CLOCK_RATE_NS;
    }
     
