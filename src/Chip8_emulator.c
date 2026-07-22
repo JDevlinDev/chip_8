@@ -44,7 +44,7 @@ static int Chip8_WaitForKeyPress(Chip8_Emulator *chip8)
     }
 }
 
-static void Chip8_PopulateMemory(Chip8_Emulator *chip8, const uint8_t *buf, size_t size)
+static void Chip8_LoadIntoMemory(Chip8_Emulator *chip8, const uint8_t *buf, size_t size)
 {
     if ((size + CHIP8_PROGRAM_LOAD_ADDRESS) >= CHIP8_MEMORY_SIZE)
     {
@@ -195,7 +195,7 @@ static void Chip8_DecodeExecute(Chip8_Emulator *chip8, uint16_t opcode)
 
     /* Dxyn - DRW V[x], V[y], nibble: Display n-byte sprite starting at memory location I at (V[x], V[y]), set VF = collision */
     case 0xd000:
-        Chip8_DrawSprite(
+        chip8->registers.V[CHIP8_VF] = Chip8_DrawSprite(
             &chip8->display,
             chip8->registers.V[x],
             chip8->registers.V[y],
@@ -306,7 +306,7 @@ size_t Chip8_Load(Chip8_Emulator *chip8, char *fname)
         return 0;
     }
     fclose(f);
-    Chip8_PopulateMemory(chip8, buffer, fsize);
+    Chip8_LoadIntoMemory(chip8, buffer, fsize);
 
     return fsize;
 }
