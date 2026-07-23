@@ -27,9 +27,6 @@ typedef struct Chip8_Emulator
     Chip8_Keyboard      keyboard;
     Chip8_Display       display;
     Chip8_Audio         audio;             
-
-    bool        wait;
-    uint8_t     keypress_register;
 } Chip8_Emulator;
 
 void        Chip8_Init(Chip8_Emulator *chip8);
