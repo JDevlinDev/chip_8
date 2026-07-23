@@ -7,9 +7,9 @@ target_sources(Chip8
       Chip8_memory.c
       Chip8_display.c
       Chip8_keyboard.c
-      Chip8_context.c
-      Chip8_time.c
+      Chip8_appState.c
       Chip8_audio.c
+      Chip8_log.c
 )
 
 target_include_directories(Chip8
