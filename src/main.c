@@ -11,13 +11,13 @@
 #include "Chip8_emulator.h"
 #include "Chip8_display.h"
 #include "Chip8_keyboard.h"
-#include "Chip8_context.h"
+#include "Chip8_appState.h"
 
-static Chip8_EmulatorState context;
+static Chip8_AppState app;
 
 SDL_AppResult SDL_AppInit(void **appstate, int argc, char *argv[])
 {
-    Chip8_InitEmulator(&context);
+    Chip8_InitializeApp(&app);
 
     char *filename;
     if (argc > 1) {
@@ -27,7 +27,7 @@ SDL_AppResult SDL_AppInit(void **appstate, int argc, char *argv[])
         printf("File was not provided\n");
         exit(EXIT_FAILURE);
     }
-    size_t fsize = Chip8_Load(&context.emulator, filename);
+    size_t fsize = Chip8_Load(&app.emulator, filename);
 
     if (fsize == 0) {
         fprintf(stderr, "Failed to load file\n");
@@ -43,19 +43,20 @@ SDL_AppResult SDL_AppEvent(void *appstate, SDL_Event *event)
 
     switch (event->type) {
         case SDL_EVENT_QUIT:
+            SDL_DestroyAudioStream(app.emulator.audio.stream);
             return SDL_APP_SUCCESS;
 
         case SDL_EVENT_KEY_DOWN:
             key = Chip8_MapKey(event->key.scancode);
             if (key != -1) {
-                Chip8_KeyDown(&context.emulator.keyboard, key);
+                Chip8_KeyDown(&app.emulator.keyboard, key);
             }
             break;
         
         case SDL_EVENT_KEY_UP:
             key = Chip8_MapKey(event->key.scancode);
             if (key != -1) {
-                Chip8_KeyUp(&context.emulator.keyboard, key);
+                Chip8_KeyUp(&app.emulator.keyboard, key);
             }
             break;
     }
@@ -65,16 +66,15 @@ SDL_AppResult SDL_AppEvent(void *appstate, SDL_Event *event)
 
 SDL_AppResult SDL_AppIterate(void *appstate)
 {
+    Chip8_UpdateClock(&app);
     
-    SDL_SetRenderDrawColor(context.renderer, 10, 10, 10, SDL_ALPHA_OPAQUE);
-    SDL_RenderClear(context.renderer);
+    SDL_SetRenderDrawColor(app.renderer, 10, 10, 10, SDL_ALPHA_OPAQUE);
+    SDL_RenderClear(app.renderer);
 
-    SDL_SetRenderDrawColor(context.renderer, 250, 250, 250, SDL_ALPHA_OPAQUE);
-    Chip8_RenderDisplay(&context.emulator.display, context.renderer);
+    SDL_SetRenderDrawColor(app.renderer, 250, 250, 250, SDL_ALPHA_OPAQUE);
+    Chip8_RenderDisplay(&app.emulator.display, app.renderer);
 
-    SDL_RenderPresent(context.renderer);
-
-    Chip8_UpdateContext(&context);
+    SDL_RenderPresent(app.renderer);
 
     return SDL_APP_CONTINUE;
 }
