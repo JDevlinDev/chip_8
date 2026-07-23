@@ -229,10 +229,21 @@ static void Chip8_DecodeExecute(Chip8_Emulator *chip8, uint16_t opcode)
             break;
 
         /* Fx0A - LD V[x], K: Wait for a key press, store the value of the key in V[x] */
-        case 0x0a:
-            int key = Chip8_WaitForKeyPress(chip8);
-            chip8->registers.V[x] = key;
-            break;
+        case 0x0a: {
+            bool key_pressed = false;
+            for (int k = 0; k < CHIP8_TOTAL_KEYS; k++) {
+                if (Chip8_KeyIsDown(&chip8->keyboard, k)) {
+                    chip8->registers.V[x] = k;
+                    key_pressed = true;
+                    break;
+                }
+
+                if (!key_pressed)
+                    chip8->registers.PC -= 2;
+                    
+                break;
+            }
+        }
         
         /* Fx15 - LD DT, V[x]: Set delay timer = V[x] */
         case 0x15:
