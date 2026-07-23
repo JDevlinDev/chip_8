@@ -30,20 +30,6 @@ static const uint8_t chip8_default_character_set[] = {
     0xF0, 0x80, 0xF0, 0x80, 0x80  // F
 };
 
-static int Chip8_WaitForKeyPress(Chip8_Emulator *chip8)
-{
-    SDL_Event event;
-
-    while (SDL_WaitEvent(&event)) {
-        if (event.type != SDL_EVENT_KEY_DOWN)
-            continue;
-
-        int key = Chip8_MapKey(event.key.scancode);
-        if (key != -1)
-            return key;
-    }
-}
-
 static void Chip8_LoadIntoMemory(Chip8_Emulator *chip8, const uint8_t *buf, size_t size)
 {
     if ((size + CHIP8_PROGRAM_LOAD_ADDRESS) >= CHIP8_MEMORY_SIZE)
