@@ -9,6 +9,7 @@
 #define CHIP8_LOG_LEVEL_DEBUG    4
 #define CHIP8_LOG_LEVEL_TRACE    5
 
+extern FILE *log_file;
 
 /**
  * Initializes the logging system.
