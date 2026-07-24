@@ -12,7 +12,7 @@
 #include "Chip8_audio.h"
 #include "Chip8_config.h"
 
-bool Chip8_InitializeApp(Chip8_AppState *as)
+bool Chip8_InitializeApp(Chip8_AppState *as, char *program_name)
 {
    SDL_SetAppMetadata("Chip8 Renderer", "1.0", "com.jdevs.chip8");
 
@@ -38,8 +38,13 @@ bool Chip8_InitializeApp(Chip8_AppState *as)
             SDL_LOGICAL_PRESENTATION_LETTERBOX);
             
    Chip8_Init(&as->emulator);
+   Chip8_InitializeLog(program_name);
 
-   as->is_running = false;
+   if (Chip8_Load(&as->emulator, program_name) == 0) {
+      LOG_ERROR("Failed to load program: %s\n", program_name);
+      return false;
+   }
+   as->is_running = true;;
 }
 
 void Chip8_UpdateClock(Chip8_AppState *as)
