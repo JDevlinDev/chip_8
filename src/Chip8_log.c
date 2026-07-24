@@ -8,7 +8,7 @@
 
 #include "Chip8_log.h"
 
-static FILE *log_file = NULL;
+FILE *log_file = NULL;
 
 void Chip8_InitializeLog(const char* game_name)
 {
@@ -38,7 +38,7 @@ void Chip8_InitializeLog(const char* game_name)
    errno = 0;
    log_file = fopen(file_name, "w");
    if(log_file != NULL) {
-      fprintf(log_file, "--- CHIP-8 Emulator log iniitialized ---/n");
+      LOG_INFO("--- CHIP-8 log initiazlized ---\n");
       fprintf(log_file, "%s - Started %s\n", time_string, game_name);
    }
    else {
