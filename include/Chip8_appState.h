@@ -5,8 +5,9 @@
 #include <SDL3/SDL_video.h>
 #include <SDL3/SDL_render.h>
 
-#include <Chip8_emulator.h>
-#include <Chip8_audio.h>
+#include "Chip8_emulator.h"
+#include "Chip8_audio.h"
+#include "Chip8_log.h"
 
 typedef struct Chip8_AppState {
    Chip8_Emulator    emulator;
@@ -23,5 +24,5 @@ typedef struct Chip8_AppState {
    SDL_Renderer   *renderer;
 } Chip8_AppState;
 
-bool    Chip8_InitializeApp(Chip8_AppState *as);
+bool    Chip8_InitializeApp(Chip8_AppState *as, char *program_name);
 void    Chip8_UpdateClock(Chip8_AppState *as);
