@@ -20,19 +20,18 @@ bool Chip8_InitializeApp(Chip8_AppState *as)
         SDL_Log("Couldn't initialize SDL: %s", SDL_GetError());
         return SDL_APP_FAILURE;
     }
-
-    memset(as, 0, sizeof(Chip8_AppState));
-
+    
     if (!SDL_CreateWindowAndRenderer(
-            CHIP8_WINDOW_TITLE,
-            CHIP8_WINDOW_WIDTH,
-            CHIP8_WINDOW_HEIGHT,
-            SDL_WINDOW_RESIZABLE,
-            &as->window, &as->renderer)) {
-            SDL_Log("Couldn't create window/renderer: %s", SDL_GetError());
-            return SDL_APP_FAILURE;
-    }
-    SDL_SetRenderLogicalPresentation(
+       CHIP8_WINDOW_TITLE,
+       CHIP8_WINDOW_WIDTH,
+       CHIP8_WINDOW_HEIGHT,
+       SDL_WINDOW_RESIZABLE,
+       &as->window, &as->renderer)) {
+          SDL_Log("Couldn't create window/renderer: %s", SDL_GetError());
+          return SDL_APP_FAILURE;
+         }
+         
+         SDL_SetRenderLogicalPresentation(
             as->renderer,
             CHIP8_SCREEN_WIDTH,
             CHIP8_SCREEN_HEIGHT,
@@ -57,10 +56,10 @@ void Chip8_UpdateClock(Chip8_AppState *as)
    as->t_accumulator += time_delta;
 
    // Handle CPU instruction cycles
-   while (as->i_accumulator >= CHIP8_CLOCK_RATE_NS) {
+   while (as->i_accumulator >= CHIP8_CPU_CLOCK_RATE_NS) {
       uint16_t next_instruction = Chip8_Fetch(&as->emulator);
       Chip8_Execute(&as->emulator, next_instruction);
-      as->i_accumulator -= CHIP8_CLOCK_RATE_NS;
+      as->i_accumulator -= CHIP8_CPU_CLOCK_RATE_NS;
    }
     
    // Handle 60Hz Delay and Sound timers
