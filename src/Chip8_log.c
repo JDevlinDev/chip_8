@@ -6,6 +6,8 @@
 #include <SDL3/SDL_time.h>
 #include <SDL3/SDL_stdinc.h>
 
+#include "Chip8_log.h"
+
 static FILE *log_file = NULL;
 
 void Chip8_InitializeLog(const char* game_name)
