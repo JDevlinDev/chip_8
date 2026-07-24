@@ -7,13 +7,19 @@
 #define CHIP8_WINDOW_HEIGHT     CHIP8_SCREEN_HEIGHT * CHIP8_WINDOW_SCALE
 #define CHIP8_WINDOW_TITLE      "Chip8 Emulator"
 
-#define CHIP8_MEMORY_SIZE       4096
-#define CHIP8_REGISTER_COUNT    16
-#define CHIP8_STACK_DEPTH       16
-#define CHIP8_TOTAL_KEYS        16
-#define CHIP8_TIMER_RATE_NS     16666666
-#define CHIP8_CLOCK_RATE_NS     1428571
-#define CHIP8_FRAME_RATE_NS     6944444
+#define CHIP8_MEMORY_SIZE        4096
+#define CHIP8_REGISTER_COUNT     16
+#define CHIP8_STACK_DEPTH        16
+#define CHIP8_TOTAL_KEYS         16
+
+/* Delay and sound timers 60Hz clock in nanoseconds */
+#define CHIP8_TIMER_RATE_NS         16666666
+
+/* CPU clock cycles 700Hz in nanoseconds */
+#define CHIP8_CPU_CLOCK_RATE_NS     1428571
+
+/* Limit app to 144FPS to avoid spiking CPU usage */
+#define CHIP8_APP_FRAME_RATE_NS     6944444
 
 #define CHIP8_CHARSET_ADDRESS       0x000
 #define CHIP8_PROGRAM_LOAD_ADDRESS  0x200 
