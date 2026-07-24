@@ -275,7 +275,6 @@ static void Chip8_DecodeExecute(Chip8_Emulator *chip8, uint16_t opcode)
 
 void Chip8_Init(Chip8_Emulator *chip8)
 {
-    memset(chip8, 0, sizeof(Chip8_Emulator));
     memcpy(&chip8->memory.memory, chip8_default_character_set, sizeof(chip8_default_character_set));
     Chip8_InitializeAudio(&chip8->audio);
 }
