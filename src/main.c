@@ -17,8 +17,7 @@
 SDL_AppResult SDL_AppInit(void **appstate, int argc, char *argv[])
 {
     Chip8_AppState *app = (Chip8_AppState *)SDL_calloc(1, sizeof(Chip8_AppState));
-    Chip8_InitializeApp(app);
-
+    
     char *filename;
     if (argc > 1) {
         filename = argv[1];
@@ -27,12 +26,8 @@ SDL_AppResult SDL_AppInit(void **appstate, int argc, char *argv[])
         printf("File was not provided\n");
         exit(EXIT_FAILURE);
     }
-    size_t fsize = Chip8_Load(&app->emulator, filename);
-
-    if (fsize == 0) {
-        fprintf(stderr, "Failed to load file\n");
-        exit(EXIT_FAILURE);
-    }
+    
+    Chip8_InitializeApp(app, filename);
     *appstate = app;
     return SDL_APP_CONTINUE;
 }
