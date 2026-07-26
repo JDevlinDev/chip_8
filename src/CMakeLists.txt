@@ -1,5 +1,10 @@
 add_executable(Chip8 main.c)
 
+target_compile_definitions(Chip8
+   PRIVATE
+      CHIP8_ACTIVE_LOG_LEVEL=${CHIP8_ACTIVE_LOG_LEVEL}
+)
+
 target_sources(Chip8
    PRIVATE
       Chip8_emulator.c
