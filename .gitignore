@@ -8,3 +8,6 @@ games
 # VS Code and project related files
 .vscode
 *.code-workspace
+
+# Log files
+*.log
