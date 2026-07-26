@@ -9,14 +9,12 @@
 #define CHIP8_LOG_LEVEL_DEBUG    4
 #define CHIP8_LOG_LEVEL_TRACE    5
 
-extern FILE *log_file;
-
 /**
  * Initializes the logging system.
  * 
  * \param[in] game_name The name of the currently running game 
  */
-void Chip8_InitializeLog(const char* game_name);
+void Chip8_InitializeLog(const char* game_path);
 
 /**
  * Writes a message to the log.
@@ -24,21 +22,12 @@ void Chip8_InitializeLog(const char* game_name);
  * \param[in] level     The log level, should be DEBUG or ERROR
  * \param[in] format    Format string
  */
-void Chip8_WriteLog(const char *level, const char *format, ...);
+void Chip8_WriteLog(const char *log_level, const char *format, ...);
 
 /**
  * Close the log and clean up.
  */
 void Chip8_CloseLog();
-
-
-
-#define LOG_FATAL(fmt, ...)   Chip8_WriteLog("[FATAL]", fmt, ##__VA_ARGS__)
-#define LOG_ERROR(fmt, ...)   Chip8_WriteLog("[ERROR]", fmt, ##__VA_ARGS__)
-#define LOG_WARN(fmt, ...)    Chip8_WriteLog("[WARN]", fmt, ##__VA_ARGS__)
-#define LOG_INFO(fmt, ...)    Chip8_WriteLog("[INFO]", fmt, ##__VA_ARGS__)
-#define LOG_DEBUG(fmt, ...)   Chip8_WriteLog("[DEBUG]", fmt, ##__VA_ARGS__)
-#define LOG_TRACE(fmt, ...)   Chip8_WriteLog("[TRACE]", fmt, ##__VA_ARGS__)
 
 #ifndef CHIP8_ACTIVE_LOG_LEVEL
    #define CHIP8_ACTIVE_LOG_LEVEL CHIP8_LOG_LEVEL_INFO
