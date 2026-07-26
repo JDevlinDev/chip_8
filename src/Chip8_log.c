@@ -10,15 +10,16 @@
 
 FILE *log_file = NULL;
 
-void Chip8_InitializeLog(const char* game_name)
+void Chip8_InitializeLog(const char* game_path)
 {
+   printf("Initializing log with log level: %d\n", CHIP8_ACTIVE_LOG_LEVEL);
    SDL_Time time_ns;
    SDL_DateTime time_bd;
 
-   char time_string[128];
-   char file_name[256];
+   char time_string[128] = {0};
+   char file_name[256] = {0};
 
-   if (SDL_GetCurrentTime(&time_ns) && SDL_DateTimeToTime(&time_bd, &time_ns)) {
+   if (SDL_GetCurrentTime(&time_ns) && SDL_TimeToDateTime(time_ns, &time_bd, true)) {
       // Construct the time string in format DD-MM-YY_HH-MM-SS
       snprintf(time_string, sizeof(time_string), "%02d-%02d-%02d_%02d-%02d-%02d",
          time_bd.day,
@@ -32,21 +33,26 @@ void Chip8_InitializeLog(const char* game_name)
       // If we couldn't get the time, fall back to random number no-date_RANDNUM
       snprintf(time_string, sizeof(time_string), "no-date_%04x", SDL_rand(0xffff));
    }
+
+   char *last_slash = strrchr(game_path, '/');
+   char *game_name = last_slash ? last_slash + 1 : "NONAME";
+
    // Construct the file name string
    snprintf(file_name, sizeof(file_name), "%s_%s.log", game_name, time_string);
 
    errno = 0;
    log_file = fopen(file_name, "w");
    if(log_file != NULL) {
-      LOG_INFO("--- CHIP-8 log initiazlized ---\n");
+      fprintf(log_file, "--- CHIP-8 log initiazlized ---\n");
       fprintf(log_file, "%s - Started %s\n", time_string, game_name);
+      // fflush(log_file);
    }
    else {
       fprintf(stderr, "Chip8: Failed to open log\n\t%s\n", strerror(errno));
    }
 }
 
-void Chip8_WriteLog(const char *level, const char *format, ...)
+void Chip8_WriteLog(const char *log_level, const char *format, ...)
 {
    if (log_file == NULL) {
       fprintf(stderr, "Chip8: Log file not intialized\n");
@@ -55,15 +61,17 @@ void Chip8_WriteLog(const char *level, const char *format, ...)
    SDL_Time time_ns;
    SDL_DateTime time_bd;
 
-   if (SDL_GetCurrentTime(&time_ns) && SDL_DateTimeToTime(&time_bd, &time_ns)) {
+   if (SDL_GetCurrentTime(&time_ns) && SDL_TimeToDateTime(time_ns, &time_bd, true)) {
       int millis = time_bd.nanosecond / 1000000;
       fprintf(log_file, "[%02d:%02d:%02d:%03d] %s ",
          time_bd.hour,
          time_bd.minute,
-         time_bd.second, millis);
+         time_bd.second,
+         millis,
+         log_level);
    }
    else {
-      fprintf(log_file, "[TIME_ERR] %s ", level);
+      fprintf(log_file, "[TIME_ERR] %s ", log_level);
    }
 
    va_list args;
