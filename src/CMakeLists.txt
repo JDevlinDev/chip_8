@@ -15,6 +15,7 @@ target_sources(Chip8
       Chip8_appState.c
       Chip8_audio.c
       Chip8_log.c
+      Chip8_registers.c
 )
 
 target_include_directories(Chip8
