@@ -329,21 +329,208 @@ uint16_t Chip8_Fetch(Chip8_Emulator *chip8)
     return opcode;
 }
 
-void Chip8_Execute(Chip8_Emulator *chip8, uint16_t opcode)
+void Chip8_DecodeToString(uint16_t opcode, char *str, size_t size)
 {
-    switch (opcode)
-    {
+    uint8_t x = CHIP8_NIBBLE_X(opcode);
+    uint8_t y = CHIP8_NIBBLE_Y(opcode);
+    uint8_t n = CHIP8_NIBBLE_N(opcode);
+    uint8_t nn = CHIP8_NIBBLE_NN(opcode);
+    uint16_t nnn = CHIP8_NIBBLE_NNN(opcode);
 
-    /* CLS: Clear the display */
-    case 0x00E0:
-        Chip8_ClearDisplay(&chip8->display);
+    switch (0xf000 & opcode) {
+
+    case 0x0000:
+        switch (nn) {
+
+        /* CLS: Clear the display */
+        case 0xe0:
+            snprintf(str, size, "(CLS)");
         break;
 
-    /* RET: Return from a subroutine */
-    case 0x00EE:
-        chip8->registers.PC = Chip8_Pop(chip8);
+        /* RET: Return from a subroutine */
+        case 0xee:
+            snprintf(str, size, "(RET)");
         break;
-    default:
-        Chip8_DecodeExecute(chip8, opcode);
+        }
+    break;
+
+    /* 1nnn - JP addr: Jump to location nnn */
+    case 0x1000:
+        snprintf(str, size, "JP %04X", nnn);
+    break;
+
+    /* 2nnn - CALL addr: Call subroutine at nnn. */
+    case 0x2000:
+        snprintf(str, size, "CALL %04X", nnn);
+    break;
+
+    /* 3xnn - SE V[x], byte: Skip next instruction if V[x] == nn. */
+    case 0x3000:
+        snprintf(str, size, "SE V%X, %02X", x, nn);
+    break;
+
+    /* 4xnn - SNE V[x], byte: Skip next instruction if V[x] != nn */
+    case 0x4000:
+        snprintf(str, size, "SNE V%X, %02X", x, nn);
+    break;
+    
+    /* 5xy0 - SE V[x], V[y]: Skip next instruction if V[x] == V[y] */
+    case 0x5000:
+        snprintf(str, size, "SE V%X, V%X", x, y);
+    break;
+
+    /* 6xnn - LD V[x], byte: puts the value nn into register V[x] */
+    case 0x6000:
+        snprintf(str, size, "LD V%X, %02X", x, nn);
+    break;
+
+    /* 7xnn - ADD V[x], byte: Adds the value nn to the value of register V[x], then stores the result in V[x] */
+    case 0x7000:
+        snprintf(str, size, "ADD V%X, %02X", x, nn);
+    break;
+
+    /* Bitwise operations */
+    case 0x8000:
+        switch(n) {
+
+        /* 8xy0 - LD Vx, Vy: Set Vx = Vy*/
+        case 0x00:
+            snprintf(str, size, "LD V%X, V%X", x, y);
+        break;
+
+        /* 8xy1 - OR V[x], V[y]: Set V[x] = V[x] OR V[y] */
+        case 0x01:
+            snprintf(str, size, "OR V%X, V%X", x, y);
+        break;
+        
+        /* 8xy2 - AND V[x], V[y]: Set V[x] = V[x] AND V[y] */
+        case 0x02:
+            snprintf(str, size, "AND V%X, V%X", x, y);
+        break;
+
+        /* 8xy3 - XOR V[x], V[y]: Set V[x] = V[x] XOR V[y] */
+        case 0x03:
+            snprintf(str, size, "XOR V%X, V%X", x, y);
+        break;
+        
+        /* 8xy4 - ADD V[x], V[y]: Set V[x] = V[x] + V[y], set V[F] = carry */    
+        case 0x04:
+            snprintf(str, size, "ADD V%X, V%X", x, y);
+        break;
+
+        /* 8xy5 - SUB V[x], V[y]: Set V[x] = V[x] - V[y], set V[F] = NOT borrow. */
+        case 0x05:
+            snprintf(str, size, "SUB V%X, V%X", x, y);
+        break;
+
+        /* 8xy6 - SHR V[x] {, Vy}: Set V[x] = V[x] SHR 1 */
+        case 0x06:
+            snprintf(str, size, "SHR V%X, V%X", x, y);
+        break;
+        /* 8xy7 - SUBN V[x], V[y]: Set V[x] = V[y] - V[x], set V[F] = NOT borrow */
+        case 0x07:
+            snprintf(str, size, "SUBN V%X, V%X", x, y);
+        break;
+
+        /* 8xyE - SHL Vx {, Vy}: Set Vx = Vx SHL 1 */
+        case 0x0e:
+            snprintf(str, size, "SHL V%X, V%X}", x, y);
+        break;
+        }
+    break;
+
+    /* 9xy0 - SNE V[x], V[y]: Skip next instruction if V[x] != [Vy] */
+    case 0x9000:
+        snprintf(str, size, "SNE V%X, V%X", x, y);
+    break;
+
+    /* Annn - LD I, addr: The value of register I is set to nnn */
+    case 0xa000:
+        snprintf(str, size, "LD I, %04X", nnn);
+    break;
+
+    /* Bnnn - JP V[0], addr: Jump to location nnn + V[0] */
+    case 0xb000:
+        snprintf(str, size, "JP V0, %04X", nnn);
+    break;
+
+    /* Cxkk - RND V[x], byte: Set V[x] = random byte AND nn */
+    case 0xc000:
+        snprintf(str, size, "RND V%X, %02X", x, nn);
+    break;
+
+    /* Dxyn - DRW V[x], V[y], nibble: Display n-byte sprite starting at memory location I at (V[x], V[y]), set VF = collision */
+    case 0xd000:
+        snprintf(str, size, "DRW V%X, V%X, %X", x, y, n);
+    break;
+
+    case 0xe000:
+        switch(nn) {
+
+        /* Ex9E - SKP V[x]: Skip next instruction if key with the value of V[x] is pressed */
+        case 0x9e:
+            snprintf(str, size, "SKP V%X", x);
+        break;
+
+        /* ExA1 - SKNP V[x]: Skip next instruction if key with the value of V[x] is not pressed */
+        case 0xa1:
+            snprintf(str, size, "SKNP V%X", x);
+        break;
+        }
+    break;
+
+    /* Keyboard, sound, and drawing */
+    case 0xf000:
+        switch(nn) {
+
+        /* Fx07 - LD V[x], DT: Set V[x] = delay timer value */
+        case 0x07:
+            snprintf(str, size, "LD V%X, DT", x);
+        break;
+
+        /* Fx0A - LD V[x], K: Wait for a key press, store the value of the key in V[x] */
+        case 0x0a:
+            snprintf(str, size, "LD V%X, K", x);
+        break;
+        
+        /* Fx15 - LD DT, V[x]: Set delay timer = V[x] */
+        case 0x15:
+            snprintf(str, size, "LD DT, V%X", x);
+        break;
+
+        /* Fx18 - LD ST, V[x]: Set sound timer = V[x] */
+        case 0x18:
+            snprintf(str, size, "LD ST, V%X", x);
+        break;
+
+        /* Fx1E - ADD I, V[x]: Set I = I + V[x] */
+        case 0x1e:
+            snprintf(str, size, "ADD I, V%X", x);
+        break;
+
+        /* Fx29 - LD F, Vx: Set I = location of sprite for digit Vx */
+        case 0x29:
+            snprintf(str, size, "LD F, V%X", x);
+        break;
+
+        /* Fx33 - LD B, Vx: Store BCD representation of Vx in memory locations I, I+1, and I+2. */
+        case 0x33:
+            snprintf(str, size, "LD B, V%X", x);
+        break;
+        
+        /* Fx55 - LD [I], V[x]: Store registers V[0] through V[x] in memory starting at location I */
+        case 0x55:
+            snprintf(str, size, "LD I, V%X", x);
+        break;
+        
+        /* Fx65 - LD Vx, [I]: Read registers V[0] through V[x] from memory starting at location I */
+        case 0x65:
+            snprintf(str, size, "LD V%X, I", x);
+        break;
+
+        default:
+            snprintf(str, size, "UNKN %04X", opcode);
+        break;
+        }
     }
 }
