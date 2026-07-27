@@ -63,15 +63,29 @@ void Chip8_UpdateClock(Chip8_AppState *as)
 
    // Handle CPU instruction cycles
    while (as->i_accumulator >= CHIP8_CPU_CLOCK_RATE_NS) {
+
       uint16_t next_instruction = Chip8_Fetch(&as->emulator);
+
+      char opstr[24] = {0};
+      Chip8_DecodeToString(next_instruction, opstr, 32);
+
+      char vregstr[64] = {0};
+      Chip8_VRegToString(&as->emulator.registers, vregstr, 64);
+
+      LOG_TRACE("%04X: %04X %-14s | I:%04X SP:%04X DT:%02d ST:%02d| V: %s",
+         as->emulator.registers.PC,
+         next_instruction,
+         opstr,
+         as->emulator.registers.I,
+         as->emulator.registers.SP,
+         as->emulator.registers.DT,
+         as->emulator.registers.ST,
+         vregstr   
+      );
+
       Chip8_Execute(&as->emulator, next_instruction);
       as->cycle_count++;
 
-      LOG_TRACE("PC: 0x%08x | Opcode: 0x%04x | Cycle count: %ld | "
-         "V[0]: 0x%04x | V[1]: 0x%04x | V[2]: 0x%04x | V[F]: 0x%04x | I: 0x%04x",
-         as->emulator.registers.PC, next_instruction, as->cycle_count,
-         as->emulator.registers.V[0], as->emulator.registers.V[1], as->emulator.registers.V[CHIP8_VF],
-         as->emulator.registers.I);
 
       as->i_accumulator -= CHIP8_CPU_CLOCK_RATE_NS;
    }
