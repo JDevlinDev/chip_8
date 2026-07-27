@@ -32,5 +32,5 @@ typedef struct Chip8_Emulator
 void        Chip8_Init(Chip8_Emulator *chip8);
 uint16_t    Chip8_Fetch(Chip8_Emulator *chip8);
 void        Chip8_Execute(Chip8_Emulator *chip8, uint16_t opcode);
-
 size_t      Chip8_Load(Chip8_Emulator *chip8, char *fname);
+void        Chip8_DecodeToString(uint16_t opcode, char *str, size_t size);
