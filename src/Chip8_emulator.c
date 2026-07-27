@@ -226,7 +226,7 @@ void Chip8_Execute(Chip8_Emulator *chip8, uint16_t opcode)
         /* Fx07 - LD V[x], DT: Set V[x] = delay timer value */
         case 0x07:
             chip8->registers.V[x] = chip8->registers.DT;
-            break;
+        break;
 
         /* Fx0A - LD V[x], K: Wait for a key press, store the value of the key in V[x] */
         case 0x0a: {
@@ -237,52 +237,53 @@ void Chip8_Execute(Chip8_Emulator *chip8, uint16_t opcode)
                     key_pressed = true;
                     break;
                 }
-
-                if (!key_pressed)
-                    chip8->registers.PC -= 2;
-                    
-                break;
             }
+
+            // If no key was down, rewind the program counter.
+            // This will repeat the instruction until a key is pressed.
+            if (!key_pressed)
+                chip8->registers.PC -= 2;
+            break;
         }
         
         /* Fx15 - LD DT, V[x]: Set delay timer = V[x] */
         case 0x15:
             chip8->registers.DT = chip8->registers.V[x];
-            break;
+        break;
 
         /* Fx18 - LD ST, V[x]: Set sound timer = V[x] */
         case 0x18:
             chip8->registers.ST = chip8->registers.V[x];
-            break;
+        break;
 
         /* Fx1E - ADD I, V[x]: Set I = I + V[x] */
         case 0x1e:
             chip8->registers.I += chip8->registers.V[x];
-            break;
+        break;
 
         /* Fx29 - LD F, Vx: Set I = location of sprite for digit Vx */
         case 0x29:
             chip8->registers.I = (chip8->registers.V[x] & 0x0f) * 5;
-            break;
+        break;
 
         /* Fx33 - LD B, Vx: Store BCD representation of Vx in memory locations I, I+1, and I+2. */
         case 0x33:
             Chip8_LoadBCD(chip8, chip8->registers.V[x]);
-            break;
+        break;
         
         /* Fx55 - LD [I], V[x]: Store registers V[0] through V[x] in memory starting at location I */
         case 0x55:
             for (int i = 0; i <= x; i++) {
                 Chip8_SetMemory(&chip8->memory, chip8->registers.I + i, chip8->registers.V[i]);
             }
-            break;
+        break;
         
         /* Fx65 - LD Vx, [I]: Read registers V[0] through V[x] from memory starting at location I */
         case 0x65:
             for (int i = 0; i <= x; i++) {
                 chip8->registers.V[i] = Chip8_GetMemory(&chip8->memory, chip8->registers.I + i);
             }
-            break;
+        break;
         }
     }
 }
