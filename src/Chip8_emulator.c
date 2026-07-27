@@ -53,7 +53,7 @@ static void Chip8_LoadBCD(Chip8_Emulator *chip8, uint8_t val)
     chip8->memory.memory[chip8->registers.I + 2] = val % 10;
 }
 
-static void Chip8_DecodeExecute(Chip8_Emulator *chip8, uint16_t opcode)
+void Chip8_Execute(Chip8_Emulator *chip8, uint16_t opcode)
 {
     uint8_t x = CHIP8_NIBBLE_X(opcode);
     uint8_t y = CHIP8_NIBBLE_Y(opcode);
@@ -62,6 +62,20 @@ static void Chip8_DecodeExecute(Chip8_Emulator *chip8, uint16_t opcode)
     uint16_t nnn = CHIP8_NIBBLE_NNN(opcode);
 
     switch (0xf000 & opcode) {
+    case 0x0000:
+        switch (nn) {
+
+        /* CLS: Clear the display */
+        case 0xe0:
+            Chip8_ClearDisplay(&chip8->display);
+        break;
+
+        /* RET: Return from a subroutine */
+        case 0xee:
+            chip8->registers.PC = Chip8_Pop(chip8);
+        break;
+        }
+    break;
 
     /* 1nnn - JP addr: Jump to location nnn */
     case 0x1000:
