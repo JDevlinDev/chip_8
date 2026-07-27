@@ -34,6 +34,7 @@ void Chip8_InitializeLog(const char* game_path)
       snprintf(time_string, sizeof(time_string), "no-date_%04x", SDL_rand(0xffff));
    }
 
+   // Extract name of game from the path
    char *last_slash = strrchr(game_path, '/');
    char *game_name = last_slash ? last_slash + 1 : "NONAME";
 
@@ -45,7 +46,6 @@ void Chip8_InitializeLog(const char* game_path)
    if(log_file != NULL) {
       fprintf(log_file, "--- CHIP-8 log initiazlized ---\n");
       fprintf(log_file, "%s - Started %s\n", time_string, game_name);
-      // fflush(log_file);
    }
    else {
       fprintf(stderr, "Chip8: Failed to open log\n\t%s\n", strerror(errno));
