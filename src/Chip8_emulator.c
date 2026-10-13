@@ -142,14 +142,27 @@ void Chip8_Execute(Chip8_Emulator *chip8, uint16_t opcode)
         
         /* 8xy4 - ADD V[x], V[y]: Set V[x] = V[x] + V[y], set V[F] = carry */    
         case 0x04:
-            chip8->registers.V[CHIP8_VF] = (chip8->registers.V[x] + chip8->registers.V[y]) > 0xff;
-            chip8->registers.V[x] += chip8->registers.V[y];
+            if ((chip8->registers.V[x] + chip8->registers.V[y]) > 0xff) {
+                chip8->registers.V[x] += chip8->registers.V[y];
+                chip8->registers.V[CHIP8_VF] = 1;
+            }
+            else {
+                chip8->registers.V[x] += chip8->registers.V[y];
+                chip8->registers.V[CHIP8_VF] = 0;
+            }
         break;
 
         /* 8xy5 - SUB V[x], V[y]: Set V[x] = V[x] - V[y], set V[F] = NOT borrow. */
         case 0x05:
-            chip8->registers.V[CHIP8_VF] = chip8->registers.V[x] > chip8->registers.V[y];
-            chip8->registers.V[x] -= chip8->registers.V[y];
+            if (chip8->registers.V[x] > chip8->registers.V[y]) {
+                chip8->registers.V[CHIP8_VF] = 1;
+                chip8->registers.V[x] -= chip8->registers.V[y];
+
+            }
+            else {
+                chip8->registers.V[CHIP8_VF] = 0;
+                chip8->registers.V[x] -= chip8->registers.V[y];
+            }
         break;
 
         /* 8xy6 - SHR V[x] {, Vy}: Set V[x] = V[x] SHR 1 */
